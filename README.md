@@ -98,13 +98,7 @@ These same dashboards feed the **reports** that show stakeholders how the SOC is
 
 #### Detection - what they're looking for
 
-Detection is the other half of the 1st-line job: monitoring is _watching_ the feeds; detection is _recognising_ which activity in them is suspicious. Common red flags a Tier 1 analyst scans for:
-
-- **Suspicious patterns** - anything that deviates from the normal **baseline**: activity at odd hours, spikes in traffic or resource use, repeated failed logins (possible brute force), or many alerts clustering together.
-- **Malware indicators** - EDR/antivirus hits, unrecognised or malicious processes, known-bad file hashes, connections to known command-and-control (C2) servers.
-- **Unusual account activity** - logins at strange times or from new devices, **privilege escalation**, dormant accounts suddenly active, or **impossible travel** (the same account logging in from two distant locations minutes apart).
-- **Abnormal data transfer** - large or unexpected outbound transfers, uploads to unknown external services - classic signs of **data exfiltration**.
-- **IP / location changes** - logins from new, foreign, or blocklisted IPs; connections to/from known-malicious addresses; sudden geolocation changes for a user or host.
+Detection is the other half of the 1st-line job: monitoring is _watching_ the feeds; detection is _recognising_ which activity in them is suspicious. The red flags a Tier 1 analyst scans for - failed-login bursts and **impossible travel**, malware and **C2** connections, **privilege escalation**, unusual data transfers, and the like - are gathered into a single checklist further down: see [Common event types to look out for](#common-event-types-to-look-out-for).
 
 The skill is knowing what **"normal" looks like** for the environment, so that **anomalies** stand out. Most detections are automated by rules/signatures in the SIEM and EDR - the analyst's job is to interpret what those detections mean and decide whether they're real.
 
@@ -341,20 +335,26 @@ The **data pipeline** carries raw telemetry from its sources to the analyst's sc
 
 ```mermaid
 flowchart TB
+    classDef stage fill:#e8f0fe,stroke:#4285f4,color:#0b1f44;
+    classDef endp fill:#e6f4ea,stroke:#34a853,color:#0b2e13;
+
     subgraph row1[" "]
         direction LR
-        SRC["Sources<br/>servers, endpoints,<br/>network, cloud"] --> COL["1. Collection<br/>agents / forwarders / APIs"] --> ING["2. Ingestion<br/>transport at scale"] --> PAR["3. Parsing &<br/>normalisation<br/>→ common schema"]
+        SRC["Sources<br/>servers · endpoints<br/>network · cloud"] --> COL["1 · Collection<br/>agents / forwarders"] --> ING["2 · Ingestion<br/>transport at scale"] --> PAR["3 · Parsing &<br/>normalisation"]
     end
     subgraph row2[" "]
         direction LR
-        ENR["4. Enrichment<br/>geo-IP, assets,<br/>threat intel"] --> STO["5. Storage<br/>indexed in the SIEM"] --> DET["6. Detection<br/>rules, dashboards,<br/>alerts"] --> AN["👤 Analyst"]
+        ENR["4 · Enrichment<br/>geo-IP · assets<br/>threat intel"] --> STO["5 · Storage<br/>indexed in SIEM"] --> DET["6 · Detection<br/>rules · alerts"] --> AN["Analyst"]
     end
     PAR --> ENR
+
+    class SRC,COL,ING,PAR,ENR,STO,DET stage
+    class AN endp
     style row1 fill:none,stroke:none
     style row2 fill:none,stroke:none
 ```
 
-> **What a SIEM actually is:** the **SIEM** (Security Information & Event Management) is the platform at the centre of all this. In one line: it **ingests machine-generated data** - the flood of logs and events from every source - and **parses it into a form humans can actually use**: normalised, searchable, correlated across sources, shown on dashboards, and turned into alerts. Raw machine output goes in; human-readable, actionable signal comes out. It's the analyst's primary cockpit, and most of the pipeline stages above happen inside it or feed into it.
+> **The SIEM sits at the centre of this pipeline** - most of the stages above happen inside it or feed into it, and it's where the processed data becomes the searchable, alertable signal an analyst works from. (Full explanation in [SIEM - what it is, an analogy, and 2026 tooling](#siem---what-it-is-an-analogy-and-2026-tooling) below.)
 
 **Getting alerts right (correct setup for immediate response)**
 
@@ -398,7 +398,7 @@ The analytical goal is the same across all of them: establish what **normal** lo
 
 ## Common event types to look out for
 
-The recurring signals a SOC watches for - this consolidates the Tier 1 detection red flags into one checklist:
+The recurring signals a SOC watches for, gathered into one detection checklist (this is the full set the [Tier 1 detection](#detection---what-theyre-looking-for) role scans for):
 
 - **Authentication anomalies** - brute-force attempts, bursts of failed logins, logins at odd hours, **impossible travel**, logins from new/foreign/blocklisted IPs.
 - **Account misuse** - privilege escalation, new admin accounts, dormant accounts reactivating, MFA/credential changes.
@@ -575,16 +575,7 @@ Worked, copy-pasteable SPL examples - searches, transformations, and visualisati
 
 ### What can you produce in Splunk?
 
-Once data is searchable, SPL is the engine behind everything you build:
-
-- **Searches** - ad-hoc investigation and threat hunting.
-- **Reports** - saved searches you re-run or schedule (e.g. a daily failed-login summary).
-- **Alerts** - saved searches that fire an action (notify, ticket, run a **SOAR** playbook) when a condition is met - the core of automated detection.
-- **Dashboards** - collections of panels/visualisations giving a live view of the environment (the analyst's main working surface - see [Dashboards](#dashboards) under Tier 1).
-- **Visualisations** - tables, timecharts, single-value indicators, maps, etc.
-- **Knowledge objects** - reusable eventtypes, tags, lookups, and data models that enrich data for everyone.
-
-Together these are how a SOC turns raw Splunk data into the **monitoring, detection, and reporting** described earlier in this doc.
+Once data is indexed, SPL is the engine behind everything you build on top of it - **searches, reports, alerts, dashboards, visualisations, and reusable knowledge objects**. Together these turn raw machine data into the **monitoring, detection, and reporting** a SOC runs on. The hands-on [What you can build in Splunk](#what-you-can-build-in-splunk) section breaks each one down.
 
 ### AI with Splunk
 
@@ -607,26 +598,22 @@ The **three core components** are the **Universal Forwarder**, the **Indexer**, 
 
 ```mermaid
 flowchart LR
-    subgraph Sources["Data sources"]
-        S1["Server logs"]
-        S2["Endpoints / Sysmon"]
-        S3["Network / firewall"]
-        S4["Cloud (CloudTrail…)"]
-    end
+    classDef src fill:#fff4e5,stroke:#f39c12,color:#3d2c00;
+    classDef mid fill:#e8f0fe,stroke:#4285f4,color:#0b1f44;
+    classDef endp fill:#e6f4ea,stroke:#34a853,color:#0b2e13;
 
-    subgraph UF["Universal Forwarders"]
-        F1["Lightweight agents<br/>collect + ship data"]
-    end
+    SRC["Data sources<br/>servers · endpoints<br/>network · cloud"]
+    UF["Universal<br/>Forwarders<br/>collect + ship"]
+    IDX["Indexers<br/>parse · index · store<br/>run searches"]
+    SH["Search Head<br/>SPL · dashboards<br/>alerts · analyst UI"]
+    AN["SOC Analyst"]
 
-    subgraph IDX["Indexers"]
-        I1["Parse → index → store<br/>run the searches"]
-    end
+    SRC --> UF --> IDX --> SH --> AN
+    SH -. "search request" .-> IDX
 
-    subgraph SH["Search Head"]
-        H1["Run SPL, dashboards,<br/>alerts - the analyst UI"]
-    end
-
-    Sources --> UF --> IDX --> SH --> Analyst["👤 SOC Analyst"]
+    class SRC src
+    class UF,IDX,SH mid
+    class AN endp
 ```
 
 ### 1. Universal Forwarder (UF) - collection
@@ -726,31 +713,34 @@ How you deploy Splunk depends on **data volume and resilience needs**. The same 
 The key idea: you scale by **separating and multiplying the same three roles** - the components don't change, only how many there are and how they're split:
 
 ```mermaid
-flowchart TB
-    subgraph single["Single-instance (the lab)"]
-        A["One box:<br/>Search Head + Indexer"]
+flowchart LR
+    classDef sh fill:#e8f0fe,stroke:#4285f4,color:#0b1f44;
+    classDef ix fill:#fce8e6,stroke:#ea4335,color:#3d0d0a;
+
+    subgraph single["① Single-instance · the lab"]
+        A["One box<br/>Search Head + Indexer"]
     end
 
-    subgraph dist["Distributed"]
-        SH1["Search Head"]
-        SH1 --> IX1["Indexer"]
-        SH1 --> IX2["Indexer"]
-        SH1 --> IX3["Indexer"]
+    subgraph dist["② Distributed"]
+        direction TB
+        D_SH["Search Head"]
+        D_SH --> D_IX1["Indexer"]
+        D_SH --> D_IX2["Indexer"]
+        D_SH --> D_IX3["Indexer"]
     end
 
-    subgraph clust["Clustered (high availability)"]
-        SHa["Search Head"]
-        SHb["Search Head"]
-        SHa --> IXa["Indexer"]
-        SHa --> IXb["Indexer"]
-        SHb --> IXa
-        SHb --> IXb
-        SHb --> IXc["Indexer"]
-        SHa --> IXc
+    subgraph clust["③ Clustered · high availability"]
+        direction TB
+        C_SH1["Search Head"]
+        C_SH2["Search Head"]
+        C_SH1 --> C_IXC["Indexer cluster<br/>3+ peers · replicated"]
+        C_SH2 --> C_IXC
     end
 
-    single -.->|"more data / speed"| dist
-    dist -.->|"need no downtime"| clust
+    single -.->|"more data / speed"| dist -.->|"need no downtime"| clust
+
+    class A,D_SH,C_SH1,C_SH2 sh
+    class D_IX1,D_IX2,D_IX3,C_IXC ix
 ```
 
 **Search Head specifically:**
@@ -863,7 +853,7 @@ index=security "failed password"
 
 ## What you can build in Splunk
 
-The [What can you produce in Splunk?](#what-can-you-produce-in-splunk) section lists these outputs; in practice they're the building blocks, from simplest to richest:
+These are the building blocks a SOC produces in Splunk, from simplest to richest:
 
 - **Reports** - a saved search you re-run or schedule (e.g. a daily "top failed logins" report emailed to the team).
 - **Alerts** - a scheduled/real-time search that **triggers an action** (email, ticket, webhook, SOAR playbook) when its condition fires - the backbone of automated detection.
