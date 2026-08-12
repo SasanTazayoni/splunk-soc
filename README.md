@@ -334,24 +334,14 @@ The **data pipeline** carries raw telemetry from its sources to the analyst's sc
 6. **Detection & analysis** - correlation rules, dashboards, and queries run over it; matches become alerts.
 
 ```mermaid
-flowchart TB
+flowchart LR
     classDef stage fill:#e8f0fe,stroke:#4285f4,color:#0b1f44;
     classDef endp fill:#e6f4ea,stroke:#34a853,color:#0b2e13;
 
-    subgraph row1[" "]
-        direction LR
-        SRC["Sources<br/>servers · endpoints<br/>network · cloud"] --> COL["1 · Collection<br/>agents / forwarders"] --> ING["2 · Ingestion<br/>transport at scale"] --> PAR["3 · Parsing &<br/>normalisation"]
-    end
-    subgraph row2[" "]
-        direction LR
-        ENR["4 · Enrichment<br/>geo-IP · assets<br/>threat intel"] --> STO["5 · Storage<br/>indexed in SIEM"] --> DET["6 · Detection<br/>rules · alerts"] --> AN["Analyst"]
-    end
-    PAR --> ENR
+    SRC["Sources<br/>servers · endpoints<br/>network · cloud"] --> COL["1 · Collection<br/>agents / forwarders"] --> ING["2 · Ingestion<br/>transport at scale"] --> PAR["3 · Parsing &<br/>normalisation"] --> ENR["4 · Enrichment<br/>geo-IP · assets<br/>threat intel"] --> STO["5 · Storage<br/>indexed in SIEM"] --> DET["6 · Detection<br/>rules · alerts"] --> AN["Analyst"]
 
     class SRC,COL,ING,PAR,ENR,STO,DET stage
     class AN endp
-    style row1 fill:none,stroke:none
-    style row2 fill:none,stroke:none
 ```
 
 > **The SIEM sits at the centre of this pipeline** - most of the stages above happen inside it or feed into it, and it's where the processed data becomes the searchable, alertable signal an analyst works from. (Full explanation in [SIEM - what it is, an analogy, and 2026 tooling](#siem---what-it-is-an-analogy-and-2026-tooling) below.)
