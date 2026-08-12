@@ -340,14 +340,18 @@ The **data pipeline** carries raw telemetry from its sources to the analyst's sc
 6. **Detection & analysis** - correlation rules, dashboards, and queries run over it; matches become alerts.
 
 ```mermaid
-flowchart LR
-    SRC["Sources<br/>servers, endpoints,<br/>network, cloud"] --> COL["1. Collection<br/>agents / forwarders / APIs"]
-    COL --> ING["2. Ingestion<br/>transport at scale"]
-    ING --> PAR["3. Parsing &<br/>normalisation<br/>→ common schema"]
-    PAR --> ENR["4. Enrichment<br/>geo-IP, assets,<br/>threat intel"]
-    ENR --> STO["5. Storage<br/>indexed in the SIEM"]
-    STO --> DET["6. Detection<br/>rules, dashboards,<br/>alerts"]
-    DET --> AN["👤 Analyst"]
+flowchart TB
+    subgraph row1[" "]
+        direction LR
+        SRC["Sources<br/>servers, endpoints,<br/>network, cloud"] --> COL["1. Collection<br/>agents / forwarders / APIs"] --> ING["2. Ingestion<br/>transport at scale"] --> PAR["3. Parsing &<br/>normalisation<br/>→ common schema"]
+    end
+    subgraph row2[" "]
+        direction LR
+        ENR["4. Enrichment<br/>geo-IP, assets,<br/>threat intel"] --> STO["5. Storage<br/>indexed in the SIEM"] --> DET["6. Detection<br/>rules, dashboards,<br/>alerts"] --> AN["👤 Analyst"]
+    end
+    PAR --> ENR
+    style row1 fill:none,stroke:none
+    style row2 fill:none,stroke:none
 ```
 
 > **What a SIEM actually is:** the **SIEM** (Security Information & Event Management) is the platform at the centre of all this. In one line: it **ingests machine-generated data** - the flood of logs and events from every source - and **parses it into a form humans can actually use**: normalised, searchable, correlated across sources, shown on dashboards, and turned into alerts. Raw machine output goes in; human-readable, actionable signal comes out. It's the analyst's primary cockpit, and most of the pipeline stages above happen inside it or feed into it.
