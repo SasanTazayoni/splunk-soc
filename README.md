@@ -9,62 +9,117 @@ A SOC is fundamentally a **blue team** (defensive) operation. It's usually struc
 1. **Tiers / lines** - a triage-and-escalation ladder (Tier 1 → Tier 2 → Tier 3), so cheap, high-volume work is filtered first and only the hard cases reach senior people.
 2. **Functional divisions** - specialised teams (threat intel, hunting, incident response, detection engineering, etc.) that the tiers draw on.
 
-This guide runs from **SOC fundamentals → what a SIEM is → Splunk in depth** (concepts *and* hands-on). To actually try Splunk, the companion doc **[DOCKER.md](DOCKER.md)** shows how to stand up a real instance in a container.
+This guide runs from **SOC fundamentals → what a SIEM is → Splunk in depth**. To actually try Splunk, the companion doc **[DOCKER.md](DOCKER.md)** shows how to stand up a real instance in a container.
 
 ---
 
 ## Contents
 
-### Part 1 - SOC (Security Operations Center)
+**SOC (Security Operations Centre)**
 
-- [The tiered model](#the-tiered-model-tiers--lines-of-support) - Tier 1 → 4, who does what (roles)
-- [Functional divisions / specialised teams](#functional-divisions--specialised-teams) - IR, threat hunting, CTI, detection engineering, red/blue/purple
-- [The incident response lifecycle](#the-incident-response-lifecycle) - NIST / SANS phases (processes)
-- [Data: the pipeline and what flows through it](#data-the-pipeline-and-what-flows-through-it) - how telemetry reaches the analyst
+- [Common tools](#common-tools) - the technology stack (SIEM, SOAR, EDR, IDS/IPS, TIP)
+- [The incident response lifecycle](#the-incident-response-lifecycle) - the process (NIST / SANS)
+- [SOC challenges](#soc-challenges)
+- [SOC best practices](#soc-best-practices)
+- [The tiered model](#the-tiered-model-tiers--lines-of-support) - roles: Tier 1 -> 4, who does what
+- [Functional divisions / specialised teams](#functional-divisions--specialised-teams) - IR, threat hunting, CTI, detection engineering
 - [Common event types to look out for](#common-event-types-to-look-out-for) - the detection checklist
-- [Common tools](#common-tools) - SIEM, SOAR, EDR, IDS/IPS, TIP…
+- [Data: the pipeline and what flows through it](#data-the-pipeline-and-what-flows-through-it)
 
-### Part 2 - SIEM
+**SIEM**
 
 - [SIEM - what it is, an analogy, and 2026 tooling](#siem---what-it-is-an-analogy-and-2026-tooling)
 
-### Part 3 - Splunk (concepts)
+**Splunk**
 
 - [What is Splunk?](#what-is-splunk)
 - [What can Splunk be used for? (and why)](#what-can-splunk-be-used-for-and-why-use-it)
 - [What is a Splunk / SOC analyst?](#what-is-a-splunk--soc-analyst)
+- [Versions of Splunk](#versions-of-splunk)
+- [Splunk architecture](#splunk-architecture) - Search Head, Indexers, Universal Forwarders
+- [Deployment options](#deployment-options-scaling-the-search-head--indexers)
 - [Basic terms in Splunk](#basic-terms-in-splunk-glossary)
 - [What data / files does Splunk ingest?](#what-data--files-does-splunk-ingest)
 - [How does Splunk onboard / ingest data?](#how-does-splunk-onboard--ingest-data)
 - [What are events?](#what-are-events-in-splunk)
 - [What is SPL?](#what-is-spl)
-- [What can you produce in Splunk?](#what-can-you-produce-in-splunk)
-- [AI with Splunk](#ai-with-splunk)
-
-### Part 4 - Splunk (hands-on)
-
-- [Splunk architecture](#splunk-architecture) - Search Head, Indexers, Universal Forwarders
-- [Versions of Splunk](#versions-of-splunk)
-- [Deployment options](#deployment-options-scaling-the-search-head--indexers)
 - [SPL by example](#spl-by-example) - searches, transformations, visualisations
 - [What you can build in Splunk](#what-you-can-build-in-splunk)
 - [Putting it together: a mini end-to-end walkthrough](#putting-it-together-a-mini-end-to-end-walkthrough)
+- [Securing data in Splunk](#securing-data-in-splunk)
 - [Apps vs add-ons](#apps-vs-add-ons)
 - [Case studies](#case-studies)
-- [Securing data in Splunk](#securing-data-in-splunk)
 - [Certification path](#certification-path)
 - [Encrypting data](#encrypting-data)
+- [AI with Splunk](#ai-with-splunk)
 - [Recommended datasets](#recommended-datasets)
 - [Guides, walkthroughs & demos](#guides-walkthroughs--demos)
 
-### Reference
+**Reference**
 
 - [Key frameworks & concepts](#key-frameworks--concepts) - MITRE ATT&CK, Kill Chain, IOC/TTP
 - [SOC metrics](#soc-metrics-how-a-soc-measures-itself) - MTTD, MTTR, dwell time
-- [SOC challenges](#soc-challenges)
-- [SOC best practices](#soc-best-practices)
 - [In-house vs outsourced (MSSP / MDR)](#in-house-vs-outsourced-mssp--mdr)
 - [Quick glossary](#quick-glossary)
+
+---
+
+## Common tools
+
+The SOC's work runs on a stack of tooling - worth knowing the categories:
+
+| Category                                                 | What it's for                                                                 | Examples of the category                             |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------- |
+| **SIEM** (Security Information & Event Management)       | Central log collection, correlation, and alerting - the analyst's main screen | Splunk, Microsoft Sentinel, Elastic, QRadar          |
+| **SOAR** (Security Orchestration, Automation & Response) | Automate repetitive response steps via playbooks                              | Cortex XSOAR (standalone); often built into the SIEM |
+| **EDR / XDR** (Endpoint / Extended Detection & Response) | Detect and respond to threats on endpoints (and beyond)                       | CrowdStrike, Microsoft Defender, SentinelOne         |
+| **IDS / IPS** (Intrusion Detection / Prevention System)  | Detect (IDS) or block (IPS) malicious network traffic                         | Snort, Suricata                                      |
+| **Threat Intelligence Platform (TIP)**                   | Aggregate and operationalise threat intel / IOCs                              | MISP, Recorded Future                                |
+| **Ticketing / Case management**                          | Track incidents through their lifecycle                                       | ServiceNow, Jira                                     |
+
+---
+
+## The incident response lifecycle
+
+Most SOCs run incidents through a standard lifecycle. The widely used **NIST** model has four phases:
+
+1. **Preparation** - tooling, playbooks, training, and access in place _before_ anything happens.
+2. **Detection & Analysis** - spot the incident and understand it (Tier 1 → Tier 2 territory).
+3. **Containment, Eradication & Recovery** - stop the spread, remove the threat, restore systems.
+4. **Post-Incident Activity** - the "lessons learned" review; feed improvements back into detections and processes.
+
+(The **SANS** model is similar but splits it into six steps: Preparation, Identification, Containment, Eradication, Recovery, Lessons Learned.)
+
+---
+
+## SOC challenges
+
+Running a SOC is genuinely hard, for reasons worth knowing:
+
+- **Alert volume & fatigue** - a SOC can face tens of thousands of alerts a day, most of them false positives. Analysts become desensitised (**alert fatigue**) and risk missing the real one.
+- **False positives & endless tuning** - noisy detections waste time; keeping them tuned is never finished.
+- **Skills shortage & burnout** - cybersecurity talent is scarce, and 24×7 shift work drives high turnover.
+- **Blind spots** - you can't detect what you don't collect; a misconfigured or silent log source hides attacks.
+- **Data volume & cost** - ingesting and storing huge log volumes is expensive (Splunk has historically been licensed by data volume, so _what you choose to log_ has a direct cost).
+- **Evolving threats** - attackers constantly change their TTPs, so detections go stale and must be updated.
+- **Speed vs accuracy** - pressure to respond fast without over- or under-reacting.
+- **Tool sprawl** - many disconnected tools are hard to integrate and correlate across.
+
+---
+
+## SOC best practices
+
+- **Automate the routine** - use **SOAR** playbooks for repetitive Tier 1 work, freeing analysts for judgement calls.
+- **Tune detections continuously** - cut false positives so real alerts aren't lost in the noise.
+- **Use playbooks/runbooks** - consistent, repeatable response instead of ad-hoc reactions.
+- **Map coverage to MITRE ATT&CK** - know which attacker techniques you can and can't detect.
+- **Be metrics-driven** - track MTTD/MTTR and actively drive them down.
+- **Hunt proactively** - don't only wait for alerts; assume breach and go looking.
+- **Integrate threat intelligence** - enrich alerts with context on known threats.
+- **Defence in depth** - the SOC is one layer; pair it with prevention (patching, hardening, least privilege).
+- **Protect & monitor the pipeline** - a source that stops logging is a blind spot, so alert on log-source health.
+- **24×7 coverage** - attackers don't keep office hours.
+- **Close the loop** - every incident should improve detections and playbooks (lessons learned).
 
 ---
 
@@ -305,16 +360,20 @@ Beyond the tier ladder, a mature SOC contains (or works closely with) these spec
 
 ---
 
-## The incident response lifecycle
+## Common event types to look out for
 
-Most SOCs run incidents through a standard lifecycle. The widely used **NIST** model has four phases:
+The recurring signals a SOC watches for, gathered into one detection checklist (this is the full set the [Tier 1 detection](#detection---what-theyre-looking-for) role scans for):
 
-1. **Preparation** - tooling, playbooks, training, and access in place _before_ anything happens.
-2. **Detection & Analysis** - spot the incident and understand it (Tier 1 → Tier 2 territory).
-3. **Containment, Eradication & Recovery** - stop the spread, remove the threat, restore systems.
-4. **Post-Incident Activity** - the "lessons learned" review; feed improvements back into detections and processes.
+- **Authentication anomalies** - brute-force attempts, bursts of failed logins, logins at odd hours, **impossible travel**, logins from new/foreign/blocklisted IPs.
+- **Account misuse** - privilege escalation, new admin accounts, dormant accounts reactivating, MFA/credential changes.
+- **Malware & suspicious execution** - EDR/AV detections, unknown or suspicious processes, known-bad file hashes, script/PowerShell abuse.
+- **Command-and-control (C2)** - beaconing, connections to known-malicious domains/IPs, unusual DNS activity.
+- **Data exfiltration** - large or unusual outbound transfers, uploads to unknown services, data staged for export.
+- **Lateral movement** - unusual internal connections, remote-execution tools, credential reuse across hosts.
+- **Configuration & integrity changes** - security settings altered, logging/AV disabled, new firewall rules, unexpected system/file changes.
+- **Resource anomalies** - CPU/memory spikes (e.g. **cryptojacking** - see the EC2 example), unexpected new services.
 
-(The **SANS** model is similar but splits it into six steps: Preparation, Identification, Containment, Eradication, Recovery, Lessons Learned.)
+In Splunk terms, these map to **saved/correlation searches**, and related events can be grouped with **eventtypes** (Splunk's feature for tagging categories of events) to make them easier to search and alert on.
 
 ---
 
@@ -386,38 +445,6 @@ The analytical goal is the same across all of them: establish what **normal** lo
 
 ---
 
-## Common event types to look out for
-
-The recurring signals a SOC watches for, gathered into one detection checklist (this is the full set the [Tier 1 detection](#detection---what-theyre-looking-for) role scans for):
-
-- **Authentication anomalies** - brute-force attempts, bursts of failed logins, logins at odd hours, **impossible travel**, logins from new/foreign/blocklisted IPs.
-- **Account misuse** - privilege escalation, new admin accounts, dormant accounts reactivating, MFA/credential changes.
-- **Malware & suspicious execution** - EDR/AV detections, unknown or suspicious processes, known-bad file hashes, script/PowerShell abuse.
-- **Command-and-control (C2)** - beaconing, connections to known-malicious domains/IPs, unusual DNS activity.
-- **Data exfiltration** - large or unusual outbound transfers, uploads to unknown services, data staged for export.
-- **Lateral movement** - unusual internal connections, remote-execution tools, credential reuse across hosts.
-- **Configuration & integrity changes** - security settings altered, logging/AV disabled, new firewall rules, unexpected system/file changes.
-- **Resource anomalies** - CPU/memory spikes (e.g. **cryptojacking** - see the EC2 example), unexpected new services.
-
-In Splunk terms, these map to **saved/correlation searches**, and related events can be grouped with **eventtypes** (Splunk's feature for tagging categories of events) to make them easier to search and alert on.
-
----
-
-## Common tools
-
-The SOC's work runs on a stack of tooling - worth knowing the categories:
-
-| Category                                                 | What it's for                                                                 | Examples of the category                             |
-| -------------------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------- |
-| **SIEM** (Security Information & Event Management)       | Central log collection, correlation, and alerting - the analyst's main screen | Splunk, Microsoft Sentinel, Elastic, QRadar          |
-| **SOAR** (Security Orchestration, Automation & Response) | Automate repetitive response steps via playbooks                              | Cortex XSOAR (standalone); often built into the SIEM |
-| **EDR / XDR** (Endpoint / Extended Detection & Response) | Detect and respond to threats on endpoints (and beyond)                       | CrowdStrike, Microsoft Defender, SentinelOne         |
-| **IDS / IPS** (Intrusion Detection / Prevention System)  | Detect (IDS) or block (IPS) malicious network traffic                         | Snort, Suricata                                      |
-| **Threat Intelligence Platform (TIP)**                   | Aggregate and operationalise threat intel / IOCs                              | MISP, Recorded Future                                |
-| **Ticketing / Case management**                          | Track incidents through their lifecycle                                       | ServiceNow, Jira                                     |
-
----
-
 ## SIEM - what it is, an analogy, and 2026 tooling
 
 **What is a SIEM?** A **SIEM** (Security Information & Event Management) is the SOC's core platform: it **ingests machine-generated data** - logs and events from every source - and **parses it into a searchable, correlated, alertable form**, turning raw machine noise into human-readable, actionable signal. It's where analysts monitor feeds, run dashboards, and receive their alerts. (See the data-pipeline section above for how data actually reaches it.)
@@ -439,17 +466,15 @@ A 2026 trend: SIEM is **converging with SOAR and XDR** into unified platforms, A
 
 ---
 
-## Splunk
-
-The sections above describe SIEMs in general; this one zooms in on **Splunk** specifically - what it is, the language you drive it with, how data gets in, and what you build on top of it.
-
-### What is Splunk?
+## What is Splunk?
 
 **Splunk** is a platform for **searching, analysing, and visualising machine-generated data** - the constant stream of logs, events, and metrics produced by servers, applications, network gear, and cloud services. Its original tagline was "the search engine for machine data," which is still the clearest one-line description: point it at your data and you can ask questions of it in real time.
 
 Although Splunk is a general **data platform** (used for IT ops, DevOps, and business analytics too), its most prominent use is as a **SIEM** - the central nervous system of a SOC. It **ingests** data from everywhere, **indexes** it for fast searching, and lets analysts **correlate, alert, dashboard, and report** on it. Splunk is the market heavyweight in this space and is now a **Cisco** company (acquired 2024).
 
-### What can Splunk be used for? (and why use it)
+---
+
+## What can Splunk be used for? (and why use it)
 
 - **Security / SIEM** - log aggregation, threat detection, correlation, alerting, incident investigation (the SOC use case that's the focus here).
 - **IT operations & monitoring** - track system health, troubleshoot outages, watch performance metrics.
@@ -466,7 +491,9 @@ Although Splunk is a general **data platform** (used for IT ops, DevOps, and bus
 
 The main trade-off is **cost** - Splunk has historically been licensed by **data volume ingested per day**, so *what you choose to log* has a direct price tag (see [SOC challenges](#soc-challenges)).
 
-### What is a Splunk / SOC analyst?
+---
+
+## What is a Splunk / SOC analyst?
 
 A **SOC analyst** (the [tiered roles](#the-tiered-model-tiers--lines-of-support) covered earlier) who uses **Splunk as their primary tool**. Day to day this means:
 
@@ -478,128 +505,30 @@ A **SOC analyst** (the [tiered roles](#the-tiered-model-tiers--lines-of-support)
 
 "Splunk analyst" isn't a separate job from "SOC analyst" so much as a description of the toolset: it signals fluency in **SPL, Splunk data models, and the Splunk workflow**. (More senior/engineering-flavoured variants - **Splunk Engineer / Admin / Developer** - focus on running the platform itself: deployment, data onboarding, building apps.)
 
-### Basic terms in Splunk (glossary)
-
-The vocabulary you'll meet constantly - consolidated in one place:
-
-| Term | What it means |
-| --- | --- |
-| **Event** | A single record of something that happened - one log entry (see [What are events?](#what-are-events-in-splunk)). |
-| **Index** | The repository where Splunk stores ingested, processed data (think "database"). The default is `main`; security data often goes in dedicated indexes. |
-| **Source** | The file, stream, or input an event came from (e.g. `/var/log/auth.log`). |
-| **Sourcetype** | The **format/type** of the data (e.g. `access_combined`, `linux_secure`) - tells Splunk how to parse it. |
-| **Host** | The device/machine the event originated from. |
-| **Field** | A name-value pair extracted from an event (e.g. `status=404`, `user=alice`). Splunk auto-extracts many; you can define more. |
-| **Fields `_time`, `_raw`** | `_time` is the event's timestamp (the backbone of everything); `_raw` is the original unparsed text. |
-| **SPL** | Search Processing Language - the query language (see [What is SPL?](#what-is-spl)). |
-| **Search** | An SPL query run over indexed data. |
-| **Saved search / Report** | A search stored to re-run or schedule. |
-| **Alert** | A saved search that runs on a schedule/real-time and triggers an action when its condition is met. |
-| **Dashboard** | A collection of visualisations (panels) built from searches. |
-| **Eventtype** | A saved category that tags events matching a given search, so related events are easy to group and reuse. |
-| **Data model** | A structured, hierarchical mapping of data that powers **pivots** and accelerates searches (e.g. the CIM). |
-| **CIM** | Common Information Model - a standard field-naming schema so data from different sources lines up (crucial for Enterprise Security). |
-| **Knowledge object** | The umbrella term for user-created things that enrich data: fields, eventtypes, tags, lookups, data models, etc. |
-| **Lookup** | An external table (e.g. CSV) used to enrich events (map an IP → asset owner). |
-| **App / Add-on** | Packaged bundles of content/config that extend Splunk (see [Apps vs add-ons](#apps-vs-add-ons) below). |
-
-### What data / files does Splunk ingest?
-
-Splunk's strength is that it ingests **any text-based, time-series machine data** - it doesn't need a fixed schema in advance.
-
-- **File formats** - plain-text **logs**, `syslog`, **CSV**, **JSON**, **XML**, Windows Event Logs (`.evtx`), web/access logs, metrics.
-- **The rule of thumb** - if it's **machine-generated and has (or can be given) a timestamp**, Splunk can probably ingest it.
-- **Structured or unstructured** - it handles neat JSON and messy free-form logs alike, because parsing happens **at search time** (schema-on-read), not on the way in.
-
-#### Schema-on-read vs schema-on-write
-
-A **schema** is just the **structure** of your data - which fields exist and what they're called (e.g. `user`, `status`, `src_ip`). The only difference between the two approaches is **when that structure is applied**.
-
-> **Analogy - moving house.** _Schema-on-write_ is unpacking every box the moment it arrives and putting each item in a labelled drawer - tidy, but you can't bring anything in until you've decided where it goes. _Schema-on-read_ is stacking the boxes in the garage as-is and only opening the one you need, when you need it - instant to store, you sort it out later.
-
-| | **Schema-on-write** (traditional databases) | **Schema-on-read** (Splunk) |
-| --- | --- | --- |
-| **When structure is applied** | Up front, **before** data is loaded | Later, **when you search** |
-| **Incoming data** | Forced into a predefined shape | Stored **raw, exactly as it arrives** |
-| **New / changed log format** | Must **redesign the schema first** | Just works - adjust field extraction at search time |
-| **Speed to onboard** | Slow (model the data first) | Instant (point it at the logs and go) |
-
-**What it looks like in Splunk.** A raw log line arrives and is stored **untouched**:
-
-```
-127.0.0.1 - alice [12/Aug/2026:10:15:32] "GET /login" 200
-```
-
-Only **when you run a search** does Splunk pull the fields out of it - `clientip=127.0.0.1`, `user=alice`, `status=200` - so you can filter and calculate on them.
-
-**Why a SOC cares:** during an incident you can point Splunk at a brand-new or messy log source and start searching **immediately**, instead of spending a day modelling it first - and if a vendor changes their log format, nothing breaks. The trade-off is a little more work at search time, which Splunk softens by auto-extracting common fields.
-
-### How does Splunk onboard / ingest data?
-
-Several routes get data into an index - pick per source:
-
-- **Universal Forwarder (UF)** - a lightweight agent installed **on the source machine** that ships its logs to Splunk. The standard way to collect from servers/endpoints at scale.
-- **Monitor input** - Splunk watches a **file or directory** (or a network port) locally and ingests new lines as they appear (e.g. tailing `/var/log/`).
-- **Upload / one-shot** - manually **upload a file** through the web UI for a single, static dataset (great for testing and this kind of lab).
-- **HTTP Event Collector (HEC)** - an **HTTP/HTTPS endpoint** apps and cloud services POST events to directly (token-authenticated) - no forwarder needed. Common for modern/cloud and developer sources.
-- **Scripted / modular inputs & APIs** - run a script or an add-on that pulls from an API on a schedule (e.g. cloud provider logs like **CloudTrail**).
-- **Syslog / network inputs** - receive `syslog` (UDP/TCP) straight from network devices.
-
-> **Where it lands:** whichever route, data flows to an **indexer**, gets **parsed** into events (timestamped, sourcetyped, fields extractable), and is stored in an **index** ready to search. This is the Splunk-specific version of the general ingest → parse → index pipeline described [above](#building-the-pipeline-devops--engineering).
-
-### What are events (in Splunk)?
-
-An **event** is Splunk's fundamental unit: **a single record of something that happened** - most often **one line of a log**, though multi-line events exist too. Every event has:
-
-- **`_time`** - the timestamp Splunk assigns (extracted from the data). Time is central to everything in Splunk.
-- **`_raw`** - the original raw text of the event.
-- **Metadata** - `host`, `source`, `sourcetype`.
-- **Fields** - the name-value pairs extracted from it (`status`, `user`, `src_ip`…), which is what you filter and calculate on.
-
-Example - one web-access log line becomes one event:
-
-```
-127.0.0.1 - alice [12/Aug/2026:10:15:32] "GET /login HTTP/1.1" 200 1043
-```
-
-From this, Splunk can extract `clientip=127.0.0.1`, `user=alice`, `method=GET`, `status=200`, `bytes=1043` - turning a raw line into structured, searchable data. Related events can then be grouped with an **eventtype**.
-
-### What is SPL?
-
-**SPL (Search Processing Language)** is Splunk's query language - how you actually ask questions of your data. Its defining feature is the **pipe (`|`)**: like a Unix shell, each command's output feeds into the next, so you build a search as a **chain of transformations**.
-
-A search generally reads left to right as: **get some events → refine/transform them → present the result.**
-
-```
-index=web status=404          ← retrieve matching events
-| stats count by clientip     ← transform: count 404s per client IP
-| sort -count                 ← order by most frequent
-```
-
-The three broad kinds of SPL commands:
-
-- **Search/filter** - narrow down events (`index=`, `sourcetype=`, `status=404`, keyword matches).
-- **Transform** - aggregate/reshape (`stats`, `chart`, `timechart`, `top`, `eval`, `dedup`).
-- **Present** - format the output (`table`, `sort`, `fields`, or feed a visualisation).
-
-Worked, copy-pasteable SPL examples - searches, transformations, and visualisations - are in [SPL by example](#spl-by-example) below.
-
-### What can you produce in Splunk?
-
-Once data is indexed, SPL is the engine behind everything you build on top of it - **searches, reports, alerts, dashboards, visualisations, and reusable knowledge objects**. Together these turn raw machine data into the **monitoring, detection, and reporting** a SOC runs on. The hands-on [What you can build in Splunk](#what-you-can-build-in-splunk) section breaks each one down.
-
-### AI with Splunk
-
-AI/ML is an increasingly central part of the Splunk story:
-
-- **Machine Learning Toolkit (MLTK)** - a Splunk app that brings ML into SPL: **anomaly detection**, forecasting, clustering, and building/predicting models directly on your data.
-- **UEBA (User & Entity Behaviour Analytics)** - ML that **baselines normal behaviour** for users/hosts and flags deviations (impossible travel, unusual data access) - detections rules alone would miss.
-- **Splunk AI Assistant** - natural-language help that can **generate and explain SPL**, lowering the barrier for analysts writing queries.
-- **The 2026 direction** - AI is used heavily to **cut alert noise**, surface correlations, and speed investigation, as SIEM/SOAR/XDR converge into more automated platforms (see the [2026 trend note](#siem---what-it-is-an-analogy-and-2026-tooling) above).
-
 ---
 
-> **Hands-on from here.** Everything above covered Splunk's *concepts*; the rest of this guide is the **practical** side - architecture, versions, deployment, SPL by example, and the ecosystem (apps, case studies, certifications, datasets). To follow along on a live instance, stand one up with **[DOCKER.md](DOCKER.md)**.
+## Versions of Splunk
+
+"Splunk" is really a **family of products**. The ones you'll actually meet:
+
+| Product | What it is | When it's used |
+| --- | --- | --- |
+| **Splunk Enterprise** | The full **self-hosted** platform - you install and run it on your own servers. | On-prem SOCs; full control over data and config. |
+| **Splunk Cloud Platform** | The same product delivered as a **SaaS** - Splunk hosts and manages it. | Orgs that want Splunk without running the infrastructure. |
+| **Splunk Free** | A free, single-instance Splunk Enterprise capped at **500 MB/day** ingest, with **no authentication / multi-user features**. | Learning, testing, small personal projects. |
+| **Splunk Enterprise Security (ES)** | A **premium SIEM app** that runs *on top of* Enterprise/Cloud - correlation searches, notable events, risk-based alerting, dashboards mapped to frameworks. | Mature SOCs wanting a turnkey SIEM. |
+| **Splunk SOAR** (formerly Phantom) | The **automation & orchestration** product - playbooks that automate response. | Automating repetitive SOC actions. |
+| **Universal Forwarder** | The **free lightweight agent** that ships data to indexers (not a full Splunk). | Deployed on every source machine (see [architecture](#splunk-architecture)). |
+
+**Key distinctions to remember:**
+
+- **Enterprise vs Cloud** = *who runs the servers* (you vs Splunk). Same core product.
+- **Free vs Enterprise** = a **feature/volume-limited** version of the same software (no auth, 500 MB/day, no clustering/alerting-by-email).
+- **Enterprise Security & SOAR are add-on products**, not versions of core Splunk - they layer security-specific capability on top.
+
+> **Editions vs the docker image:** the official `splunk/splunk` Docker image runs **Splunk Enterprise** and starts as a **trial** (full features for 60 days, then it converts to the Free tier's limits unless licensed) - ideal for a lab.
+
+---
 
 ## Splunk architecture
 
@@ -633,7 +562,7 @@ The **Universal Forwarder** is a **lightweight agent installed on the source mac
 
 - **Lightweight by design** - it's a stripped-down Splunk with no UI and minimal footprint, so it can run on thousands of machines without hurting performance.
 - **Forwards, doesn't process** - a UF generally does *not* parse or index; it just reliably ships raw data onward. (Its bigger sibling, the **Heavy Forwarder**, *can* parse and route data before forwarding - used when you need filtering/routing at the edge.)
-- **This is the standard way to get data in at scale** - one of the ingest methods described in [How does Splunk onboard / ingest data?](#how-does-splunk-onboard--ingest-data) above.
+- **This is the standard way to get data in at scale** - one of the ingest methods described in [How does Splunk onboard / ingest data?](#how-does-splunk-onboard--ingest-data) below.
 
 > **Analogy:** the UFs are the **cameras** out in the building (from the [SOC analogy](#soc-siem--splunk---a-practical-guide) at the top of this guide) - many small devices, each just capturing and sending its feed back to the control room.
 
@@ -684,29 +613,6 @@ Beyond the core three, a production Splunk has management roles you'll hear ment
 | **Monitoring Console** | Dashboards for the health of Splunk itself. |
 
 For a small lab, none of these matter - a **single all-in-one instance** plays all three core roles at once (see [Deployment options](#deployment-options-scaling-the-search-head--indexers) below).
-
----
-
-## Versions of Splunk
-
-"Splunk" is really a **family of products**. The ones you'll actually meet:
-
-| Product | What it is | When it's used |
-| --- | --- | --- |
-| **Splunk Enterprise** | The full **self-hosted** platform - you install and run it on your own servers. | On-prem SOCs; full control over data and config. |
-| **Splunk Cloud Platform** | The same product delivered as a **SaaS** - Splunk hosts and manages it. | Orgs that want Splunk without running the infrastructure. |
-| **Splunk Free** | A free, single-instance Splunk Enterprise capped at **500 MB/day** ingest, with **no authentication / multi-user features**. | Learning, testing, small personal projects. |
-| **Splunk Enterprise Security (ES)** | A **premium SIEM app** that runs *on top of* Enterprise/Cloud - correlation searches, notable events, risk-based alerting, dashboards mapped to frameworks. | Mature SOCs wanting a turnkey SIEM. |
-| **Splunk SOAR** (formerly Phantom) | The **automation & orchestration** product - playbooks that automate response. | Automating repetitive SOC actions. |
-| **Universal Forwarder** | The **free lightweight agent** that ships data to indexers (not a full Splunk). | Deployed on every source machine (see [architecture](#splunk-architecture)). |
-
-**Key distinctions to remember:**
-
-- **Enterprise vs Cloud** = *who runs the servers* (you vs Splunk). Same core product.
-- **Free vs Enterprise** = a **feature/volume-limited** version of the same software (no auth, 500 MB/day, no clustering/alerting-by-email).
-- **Enterprise Security & SOAR are add-on products**, not versions of core Splunk - they layer security-specific capability on top.
-
-> **Editions vs the docker image:** the official `splunk/splunk` Docker image runs **Splunk Enterprise** and starts as a **trial** (full features for 60 days, then it converts to the Free tier's limits unless licensed) - ideal for a lab.
 
 ---
 
@@ -761,6 +667,122 @@ flowchart LR
 - **Search Head Pooling** - an older, deprecated approach (mentioned only so you recognise the term); SHC replaced it.
 
 > **Rule of thumb:** start **single-instance**, split into **distributed** when one box can't keep up with ingest/search, and add **clustering** when you need high availability. You scale by *separating and multiplying* the roles from the [architecture](#splunk-architecture) section - the concepts don't change.
+
+---
+
+## Basic terms in Splunk (glossary)
+
+The vocabulary you'll meet constantly - consolidated in one place:
+
+| Term | What it means |
+| --- | --- |
+| **Event** | A single record of something that happened - one log entry (see [What are events?](#what-are-events-in-splunk)). |
+| **Index** | The repository where Splunk stores ingested, processed data (think "database"). The default is `main`; security data often goes in dedicated indexes. |
+| **Source** | The file, stream, or input an event came from (e.g. `/var/log/auth.log`). |
+| **Sourcetype** | The **format/type** of the data (e.g. `access_combined`, `linux_secure`) - tells Splunk how to parse it. |
+| **Host** | The device/machine the event originated from. |
+| **Field** | A name-value pair extracted from an event (e.g. `status=404`, `user=alice`). Splunk auto-extracts many; you can define more. |
+| **Fields `_time`, `_raw`** | `_time` is the event's timestamp (the backbone of everything); `_raw` is the original unparsed text. |
+| **SPL** | Search Processing Language - the query language (see [What is SPL?](#what-is-spl)). |
+| **Search** | An SPL query run over indexed data. |
+| **Saved search / Report** | A search stored to re-run or schedule. |
+| **Alert** | A saved search that runs on a schedule/real-time and triggers an action when its condition is met. |
+| **Dashboard** | A collection of visualisations (panels) built from searches. |
+| **Eventtype** | A saved category that tags events matching a given search, so related events are easy to group and reuse. |
+| **Data model** | A structured, hierarchical mapping of data that powers **pivots** and accelerates searches (e.g. the CIM). |
+| **CIM** | Common Information Model - a standard field-naming schema so data from different sources lines up (crucial for Enterprise Security). |
+| **Knowledge object** | The umbrella term for user-created things that enrich data: fields, eventtypes, tags, lookups, data models, etc. |
+| **Lookup** | An external table (e.g. CSV) used to enrich events (map an IP → asset owner). |
+| **App / Add-on** | Packaged bundles of content/config that extend Splunk (see [Apps vs add-ons](#apps-vs-add-ons) below). |
+
+---
+
+## What data / files does Splunk ingest?
+
+Splunk's strength is that it ingests **any text-based, time-series machine data** - it doesn't need a fixed schema in advance.
+
+- **File formats** - plain-text **logs**, `syslog`, **CSV**, **JSON**, **XML**, Windows Event Logs (`.evtx`), web/access logs, metrics.
+- **The rule of thumb** - if it's **machine-generated and has (or can be given) a timestamp**, Splunk can probably ingest it.
+- **Structured or unstructured** - it handles neat JSON and messy free-form logs alike, because parsing happens **at search time** (schema-on-read), not on the way in.
+
+### Schema-on-read vs schema-on-write
+
+A **schema** is just the **structure** of your data - which fields exist and what they're called (e.g. `user`, `status`, `src_ip`). The only difference between the two approaches is **when that structure is applied**.
+
+> **Analogy - moving house.** _Schema-on-write_ is unpacking every box the moment it arrives and putting each item in a labelled drawer - tidy, but you can't bring anything in until you've decided where it goes. _Schema-on-read_ is stacking the boxes in the garage as-is and only opening the one you need, when you need it - instant to store, you sort it out later.
+
+| | **Schema-on-write** (traditional databases) | **Schema-on-read** (Splunk) |
+| --- | --- | --- |
+| **When structure is applied** | Up front, **before** data is loaded | Later, **when you search** |
+| **Incoming data** | Forced into a predefined shape | Stored **raw, exactly as it arrives** |
+| **New / changed log format** | Must **redesign the schema first** | Just works - adjust field extraction at search time |
+| **Speed to onboard** | Slow (model the data first) | Instant (point it at the logs and go) |
+
+**What it looks like in Splunk.** A raw log line arrives and is stored **untouched**:
+
+```
+127.0.0.1 - alice [12/Aug/2026:10:15:32] "GET /login" 200
+```
+
+Only **when you run a search** does Splunk pull the fields out of it - `clientip=127.0.0.1`, `user=alice`, `status=200` - so you can filter and calculate on them.
+
+**Why a SOC cares:** during an incident you can point Splunk at a brand-new or messy log source and start searching **immediately**, instead of spending a day modelling it first - and if a vendor changes their log format, nothing breaks. The trade-off is a little more work at search time, which Splunk softens by auto-extracting common fields.
+
+---
+
+## How does Splunk onboard / ingest data?
+
+Several routes get data into an index - pick per source:
+
+- **Universal Forwarder (UF)** - a lightweight agent installed **on the source machine** that ships its logs to Splunk. The standard way to collect from servers/endpoints at scale.
+- **Monitor input** - Splunk watches a **file or directory** (or a network port) locally and ingests new lines as they appear (e.g. tailing `/var/log/`).
+- **Upload / one-shot** - manually **upload a file** through the web UI for a single, static dataset (great for testing and this kind of lab).
+- **HTTP Event Collector (HEC)** - an **HTTP/HTTPS endpoint** apps and cloud services POST events to directly (token-authenticated) - no forwarder needed. Common for modern/cloud and developer sources.
+- **Scripted / modular inputs & APIs** - run a script or an add-on that pulls from an API on a schedule (e.g. cloud provider logs like **CloudTrail**).
+- **Syslog / network inputs** - receive `syslog` (UDP/TCP) straight from network devices.
+
+> **Where it lands:** whichever route, data flows to an **indexer**, gets **parsed** into events (timestamped, sourcetyped, fields extractable), and is stored in an **index** ready to search. This is the Splunk-specific version of the general ingest → parse → index pipeline described [above](#building-the-pipeline-devops--engineering).
+
+---
+
+## What are events (in Splunk)?
+
+An **event** is Splunk's fundamental unit: **a single record of something that happened** - most often **one line of a log**, though multi-line events exist too. Every event has:
+
+- **`_time`** - the timestamp Splunk assigns (extracted from the data). Time is central to everything in Splunk.
+- **`_raw`** - the original raw text of the event.
+- **Metadata** - `host`, `source`, `sourcetype`.
+- **Fields** - the name-value pairs extracted from it (`status`, `user`, `src_ip`…), which is what you filter and calculate on.
+
+Example - one web-access log line becomes one event:
+
+```
+127.0.0.1 - alice [12/Aug/2026:10:15:32] "GET /login HTTP/1.1" 200 1043
+```
+
+From this, Splunk can extract `clientip=127.0.0.1`, `user=alice`, `method=GET`, `status=200`, `bytes=1043` - turning a raw line into structured, searchable data. Related events can then be grouped with an **eventtype**.
+
+---
+
+## What is SPL?
+
+**SPL (Search Processing Language)** is Splunk's query language - how you actually ask questions of your data. Its defining feature is the **pipe (`|`)**: like a Unix shell, each command's output feeds into the next, so you build a search as a **chain of transformations**.
+
+A search generally reads left to right as: **get some events → refine/transform them → present the result.**
+
+```
+index=web status=404          ← retrieve matching events
+| stats count by clientip     ← transform: count 404s per client IP
+| sort -count                 ← order by most frequent
+```
+
+The three broad kinds of SPL commands:
+
+- **Search/filter** - narrow down events (`index=`, `sourcetype=`, `status=404`, keyword matches).
+- **Transform** - aggregate/reshape (`stats`, `chart`, `timechart`, `top`, `eval`, `dedup`).
+- **Present** - format the output (`table`, `sort`, `fields`, or feed a visualisation).
+
+Worked, copy-pasteable SPL examples - searches, transformations, and visualisations - are in [SPL by example](#spl-by-example) below.
 
 ---
 
@@ -908,6 +930,22 @@ index=web sourcetype=access_combined
 
 ---
 
+## Securing data in Splunk
+
+Because Splunk holds sensitive log data (and *is* a security tool), hardening it matters:
+
+- **Role-based access control (RBAC)** - grant users the least privilege; restrict which **indexes** and data each role can search.
+- **Index-level segregation** - put sensitive data in separate indexes so access can be controlled per source.
+- **Field masking / anonymisation** - redact or hash sensitive fields (PII, card numbers) at ingest so they're never stored in the clear.
+- **Authentication** - integrate with **LDAP / SAML / SSO** and enforce **MFA** rather than local accounts.
+- **Audit** - Splunk logs its own activity to the `_audit` index; monitor *who searched what*.
+- **Secure the pipeline** - TLS between forwarders, indexers, and search heads (see [encryption](#encrypting-data)).
+- **Protect the license & configs** - limit who can change inputs, alerts, and knowledge objects.
+
+> A SOC's SIEM is a high-value target: if an attacker blinds or tampers with Splunk, they blind the SOC. Securing it is part of securing the org.
+
+---
+
 ## Apps vs add-ons
 
 Both are **packaged bundles** you install to extend Splunk, and the terms are often used loosely - but there's a real distinction:
@@ -953,22 +991,6 @@ How Splunk gets used in the real world, by domain:
 
 ---
 
-## Securing data in Splunk
-
-Because Splunk holds sensitive log data (and *is* a security tool), hardening it matters:
-
-- **Role-based access control (RBAC)** - grant users the least privilege; restrict which **indexes** and data each role can search.
-- **Index-level segregation** - put sensitive data in separate indexes so access can be controlled per source.
-- **Field masking / anonymisation** - redact or hash sensitive fields (PII, card numbers) at ingest so they're never stored in the clear.
-- **Authentication** - integrate with **LDAP / SAML / SSO** and enforce **MFA** rather than local accounts.
-- **Audit** - Splunk logs its own activity to the `_audit` index; monitor *who searched what*.
-- **Secure the pipeline** - TLS between forwarders, indexers, and search heads (see [encryption](#encrypting-data)).
-- **Protect the license & configs** - limit who can change inputs, alerts, and knowledge objects.
-
-> A SOC's SIEM is a high-value target: if an attacker blinds or tampers with Splunk, they blind the SOC. Securing it is part of securing the org.
-
----
-
 ## Certification path
 
 Splunk's certification ladder (as a rough progression), plus what's useful for a SOC:
@@ -997,6 +1019,17 @@ Splunk protects data in two states:
 - **Secrets** - Splunk encrypts stored passwords/tokens in config using a **splunk.secret** key; protect that file.
 
 > **Rule of thumb:** TLS everywhere for data in motion; disk encryption for data at rest; guard `splunk.secret`.
+
+---
+
+## AI with Splunk
+
+AI/ML is an increasingly central part of the Splunk story:
+
+- **Machine Learning Toolkit (MLTK)** - a Splunk app that brings ML into SPL: **anomaly detection**, forecasting, clustering, and building/predicting models directly on your data.
+- **UEBA (User & Entity Behaviour Analytics)** - ML that **baselines normal behaviour** for users/hosts and flags deviations (impossible travel, unusual data access) - detections rules alone would miss.
+- **Splunk AI Assistant** - natural-language help that can **generate and explain SPL**, lowering the barrier for analysts writing queries.
+- **The 2026 direction** - AI is used heavily to **cut alert noise**, surface correlations, and speed investigation, as SIEM/SOAR/XDR converge into more automated platforms (see the [2026 trend note](#siem---what-it-is-an-analogy-and-2026-tooling) above).
 
 ---
 
@@ -1051,37 +1084,6 @@ Where to learn hands-on:
 - **Alert/ticket volume**, **escalation rate**, and **SLA adherence**.
 
 Lowering **MTTD** and **MTTR** - detect faster, respond faster - is the SOC's central goal.
-
----
-
-## SOC challenges
-
-Running a SOC is genuinely hard, for reasons worth knowing:
-
-- **Alert volume & fatigue** - a SOC can face tens of thousands of alerts a day, most of them false positives. Analysts become desensitised (**alert fatigue**) and risk missing the real one.
-- **False positives & endless tuning** - noisy detections waste time; keeping them tuned is never finished.
-- **Skills shortage & burnout** - cybersecurity talent is scarce, and 24×7 shift work drives high turnover.
-- **Blind spots** - you can't detect what you don't collect; a misconfigured or silent log source hides attacks.
-- **Data volume & cost** - ingesting and storing huge log volumes is expensive (Splunk has historically been licensed by data volume, so _what you choose to log_ has a direct cost).
-- **Evolving threats** - attackers constantly change their TTPs, so detections go stale and must be updated.
-- **Speed vs accuracy** - pressure to respond fast without over- or under-reacting.
-- **Tool sprawl** - many disconnected tools are hard to integrate and correlate across.
-
----
-
-## SOC best practices
-
-- **Automate the routine** - use **SOAR** playbooks for repetitive Tier 1 work, freeing analysts for judgement calls.
-- **Tune detections continuously** - cut false positives so real alerts aren't lost in the noise.
-- **Use playbooks/runbooks** - consistent, repeatable response instead of ad-hoc reactions.
-- **Map coverage to MITRE ATT&CK** - know which attacker techniques you can and can't detect.
-- **Be metrics-driven** - track MTTD/MTTR and actively drive them down.
-- **Hunt proactively** - don't only wait for alerts; assume breach and go looking.
-- **Integrate threat intelligence** - enrich alerts with context on known threats.
-- **Defence in depth** - the SOC is one layer; pair it with prevention (patching, hardening, least privilege).
-- **Protect & monitor the pipeline** - a source that stops logging is a blind spot, so alert on log-source health.
-- **24×7 coverage** - attackers don't keep office hours.
-- **Close the loop** - every incident should improve detections and playbooks (lessons learned).
 
 ---
 
