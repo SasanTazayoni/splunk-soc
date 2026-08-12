@@ -468,8 +468,8 @@ Although Splunk is a general **data platform** (used for IT ops, DevOps, and bus
 
 **Why use it over alternatives:**
 
-- **Ingests almost anything** - it's schema-on-read (see below), so you can throw in messy, varied log formats without defining a schema up front.
-- **Powerful search language (SPL)** - expressive enough to slice data in ways simple keyword search can't.
+- **Ingests almost anything** - it's [schema-on-read](#schema-on-read-vs-schema-on-write) (explained below), so you can throw in messy, varied log formats without defining a schema up front.
+- **Powerful search language ([SPL](#what-is-spl))** - Splunk's own query language (Search Processing Language, covered in full below), expressive enough to slice data in ways simple keyword search can't.
 - **Real-time** - search and alert on data as it arrives, not just after batch processing.
 - **Scales massively** - from a laptop instance to petabyte-scale distributed clusters.
 - **Huge ecosystem** - thousands of ready-made **apps and add-ons** (e.g. Splunk Enterprise Security, the Splunk Add-on for AWS) for common data sources and use cases.
@@ -478,7 +478,7 @@ The main trade-off is **cost** - Splunk has historically been licensed by **data
 
 ### What is a Splunk / SOC analyst?
 
-A **SOC analyst** (covered by tier above) who uses **Splunk as their primary tool**. Day to day this means:
+A **SOC analyst** (the [tiered roles](#the-tiered-model-tiers--lines-of-support) covered earlier) who uses **Splunk as their primary tool**. Day to day this means:
 
 - **Writing SPL searches** to investigate alerts and hunt through logs.
 - **Monitoring dashboards** built in Splunk for the live state of the environment.
@@ -494,14 +494,14 @@ The vocabulary you'll meet constantly - consolidated in one place:
 
 | Term | What it means |
 | --- | --- |
-| **Event** | A single record of something that happened - one log entry (see below). |
+| **Event** | A single record of something that happened - one log entry (see [What are events?](#what-are-events-in-splunk)). |
 | **Index** | The repository where Splunk stores ingested, processed data (think "database"). The default is `main`; security data often goes in dedicated indexes. |
 | **Source** | The file, stream, or input an event came from (e.g. `/var/log/auth.log`). |
 | **Sourcetype** | The **format/type** of the data (e.g. `access_combined`, `linux_secure`) - tells Splunk how to parse it. |
 | **Host** | The device/machine the event originated from. |
 | **Field** | A name-value pair extracted from an event (e.g. `status=404`, `user=alice`). Splunk auto-extracts many; you can define more. |
 | **Fields `_time`, `_raw`** | `_time` is the event's timestamp (the backbone of everything); `_raw` is the original unparsed text. |
-| **SPL** | Search Processing Language - the query language (see below). |
+| **SPL** | Search Processing Language - the query language (see [What is SPL?](#what-is-spl)). |
 | **Search** | An SPL query run over indexed data. |
 | **Saved search / Report** | A search stored to re-run or schedule. |
 | **Alert** | A saved search that runs on a schedule/real-time and triggers an action when its condition is met. |
@@ -521,7 +521,28 @@ Splunk's strength is that it ingests **any text-based, time-series machine data*
 - **The rule of thumb** - if it's **machine-generated and has (or can be given) a timestamp**, Splunk can probably ingest it.
 - **Structured or unstructured** - it handles neat JSON and messy free-form logs alike, because parsing happens **at search time** (schema-on-read), not on the way in.
 
-> **Schema-on-read vs schema-on-write:** traditional databases force you to define fields *before* loading data (schema-on-write). Splunk stores the **raw data as-is** and extracts fields **when you search** (schema-on-read) - which is why you can onboard unfamiliar or changing log formats without redesigning anything.
+#### Schema-on-read vs schema-on-write
+
+A **schema** is just the **structure** of your data - which fields exist and what they're called (e.g. `user`, `status`, `src_ip`). The only difference between the two approaches is **when that structure is applied**.
+
+> **Analogy - moving house.** _Schema-on-write_ is unpacking every box the moment it arrives and putting each item in a labelled drawer - tidy, but you can't bring anything in until you've decided where it goes. _Schema-on-read_ is stacking the boxes in the garage as-is and only opening the one you need, when you need it - instant to store, you sort it out later.
+
+| | **Schema-on-write** (traditional databases) | **Schema-on-read** (Splunk) |
+| --- | --- | --- |
+| **When structure is applied** | Up front, **before** data is loaded | Later, **when you search** |
+| **Incoming data** | Forced into a predefined shape | Stored **raw, exactly as it arrives** |
+| **New / changed log format** | Must **redesign the schema first** | Just works - adjust field extraction at search time |
+| **Speed to onboard** | Slow (model the data first) | Instant (point it at the logs and go) |
+
+**What it looks like in Splunk.** A raw log line arrives and is stored **untouched**:
+
+```
+127.0.0.1 - alice [12/Aug/2026:10:15:32] "GET /login" 200
+```
+
+Only **when you run a search** does Splunk pull the fields out of it - `clientip=127.0.0.1`, `user=alice`, `status=200` - so you can filter and calculate on them.
+
+**Why a SOC cares:** during an incident you can point Splunk at a brand-new or messy log source and start searching **immediately**, instead of spending a day modelling it first - and if a vendor changes their log format, nothing breaks. The trade-off is a little more work at search time, which Splunk softens by auto-extracting common fields.
 
 ### How does Splunk onboard / ingest data?
 
