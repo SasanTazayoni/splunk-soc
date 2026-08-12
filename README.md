@@ -2,7 +2,7 @@
 
 A **Security Operations Center (SOC)** is the team (and the function) responsible for **continuously monitoring, detecting, analysing, and responding to cybersecurity threats** across an organisation. Think of it as the organisation's security "control room" - people, processes, and tooling working together to catch attacks early and respond fast when something gets through. (Note a SOC is primarily about **detection and response**, not prevention - keeping attackers out in the first place is mostly the job of firewalls, patching, and access controls.)
 
-> **Analogy - cameras, not a guard in every room.** You can't post a security guard in every room of a building, but you _can_ put a **camera** in each one and watch them all from a single control room. A SOC works the same way: it can't place a person on every server, laptop, and account, so instead everything is **instrumented** - logs and telemetry are the "cameras" - and analysts watch those feeds centrally through the **SIEM** to spot where the problem is. That's the whole idea behind centralised monitoring.
+> **Analogy - cameras, not a guard in every room.** You can't post a security guard in every room of a building, but you _can_ put a **camera** in each one and watch them all from a single control room. A SOC works the same way: it can't place a person on every server, laptop, and account, so instead everything is **instrumented** - logs and telemetry are the "cameras" - and analysts watch those feeds centrally through the **SIEM** (Security Information and Event Management - the central platform the whole SOC works from; [explained in full below](#siem---what-it-is-an-analogy-and-2026-tooling)) to spot where the problem is. That's the whole idea behind centralised monitoring.
 
 A SOC is fundamentally a **blue team** (defensive) operation. It's usually structured in two overlapping ways at once:
 
@@ -80,7 +80,7 @@ The **front line** - "eyes on glass." They watch the alert queue in real time an
 
 **What they do**
 
-- Continuously monitor the **SIEM** and other alert sources (EDR, IDS/IPS, firewalls).
+- Continuously monitor the **SIEM** and other alert sources - **EDR** (Endpoint Detection & Response), **IDS/IPS** (Intrusion Detection/Prevention Systems), firewalls (all covered in [Common tools](#common-tools)).
 - **Triage** each alert: is it real or a false positive? How urgent?
 - Do initial investigation and **categorise/prioritise** incidents.
 - Resolve simple, known issues using **runbooks/playbooks**.
@@ -234,7 +234,7 @@ The **experts.** Senior specialists who handle the hardest incidents and, crucia
 
 Hunting is **hypothesis-driven**, not alert-driven. The loop:
 
-1. **Form a hypothesis** - a specific, testable idea about how an attacker might be operating undetected. Often framed around a **MITRE ATT&CK** technique or fresh threat intel.
+1. **Form a hypothesis** - a specific, testable idea about how an attacker might be operating undetected. Often framed around a **MITRE ATT&CK** technique (the industry-standard [knowledge base of attacker tactics & techniques](#key-frameworks--concepts)) or fresh threat intel.
 2. **Gather the data** - pull the logs that would show it if it were true.
 3. **Analyse** - search for the pattern, filtering out the known-good baseline.
 4. **Confirm or refute** - either you find something (hand it to incident response) or you don't (still valuable - it validates coverage).
@@ -280,7 +280,7 @@ Tier 4 translates raw SOC activity into **business terms** the board understands
 
 During a serious breach, the SOC Manager becomes the **coordinator** - not doing the technical work, but running it: pulling in the right people, keeping executives informed, and bringing in **legal, comms/PR, and external parties** (regulators, law enforcement, an IR retainer) when needed.
 
-> **Note:** many modern SOCs are moving _away_ from rigid tiers toward flatter, skill-based models - partly because automation (SOAR) now handles a lot of the repetitive Tier 1 work. But the tier vocabulary is still the standard way the structure is described, and it maps cleanly onto "who does what."
+> **Note:** many modern SOCs are moving _away_ from rigid tiers toward flatter, skill-based models - partly because automation (**SOAR** - Security Orchestration, Automation & Response; see [Common tools](#common-tools)) now handles a lot of the repetitive Tier 1 work. But the tier vocabulary is still the standard way the structure is described, and it maps cleanly onto "who does what."
 
 ---
 
