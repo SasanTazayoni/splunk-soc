@@ -51,11 +51,11 @@ This guide runs from **SOC fundamentals → what a SIEM is → Splunk in depth**
 - [Putting it together: a mini end-to-end walkthrough](#putting-it-together-a-mini-end-to-end-walkthrough)
 - [Apps vs add-ons](#apps-vs-add-ons)
 - [Case studies](#case-studies)
-- [Securing data in Splunk](#securing-data-in-splunk-optional) *(optional)*
+- [Securing data in Splunk](#securing-data-in-splunk)
 - [Certification path](#certification-path)
-- [Encrypting data](#encrypting-data-super-optional) *(super optional)*
-- [Recommended datasets](#recommended-datasets-super-optional) *(super optional)*
-- [Guides, walkthroughs & demos](#guides-walkthroughs--demos-super-optional) *(super optional)*
+- [Encrypting data](#encrypting-data)
+- [Recommended datasets](#recommended-datasets)
+- [Guides, walkthroughs & demos](#guides-walkthroughs--demos)
 
 ### Reference
 
@@ -376,7 +376,7 @@ The SOC's work runs on a stack of tooling — worth knowing the categories:
 
 **SIEM software (2026).** The major platforms you'll meet as of 2026:
 
-- **Splunk** — the market heavyweight and the focus of this repo; powerful search language (SPL) and a huge app ecosystem (now a Cisco company).
+- **Splunk** — the market heavyweight; powerful search language (SPL) and a huge app ecosystem (now a Cisco company).
 - **Microsoft Sentinel** — cloud-native, tightly integrated with Azure and Microsoft 365.
 - **Google Security Operations (Chronicle)** — cloud-scale, Google-backed.
 - **Elastic Security** — built on the open ELK stack.
@@ -389,7 +389,7 @@ A 2026 trend: SIEM is **converging with SOAR and XDR** into unified platforms, A
 
 ---
 
-## Splunk — the SIEM this repo focuses on
+## Splunk
 
 The sections above describe SIEMs in general; this one zooms in on **Splunk** specifically — what it is, the language you drive it with, how data gets in, and what you build on top of it.
 
@@ -543,7 +543,7 @@ AI/ML is an increasingly central part of the Splunk story:
 
 Splunk isn't one monolithic program — in any real deployment it's **several specialised components**, each doing one job in the data's journey from source to analyst. Data flows in **one direction**: raw logs are collected at the edge, processed and stored in the middle, and searched at the top.
 
-The **three core components** (the ones you'll be asked about in interviews) are the **Universal Forwarder**, the **Indexer**, and the **Search Head**.
+The **three core components** are the **Universal Forwarder**, the **Indexer**, and the **Search Head**.
 
 ```mermaid
 flowchart LR
@@ -820,7 +820,7 @@ For a SOC specifically, the high-value outputs are **correlation-search-driven a
 
 The sections above cover the pieces in isolation — architecture, SPL, what you can build. Here's how they connect in the workflow you'd actually follow: **get data in → search it → visualise it → alert on it.** This assumes a running instance from the [Docker lab](DOCKER.md#deploying-splunk-in-docker).
 
-**1. Get data in.** In Splunk Web, go to **Settings → Add Data → Upload** and pick a log file (Splunk's own **[tutorial dataset](#recommended-datasets-super-optional)** is ideal). Splunk asks for a **sourcetype** (how to parse it — e.g. `access_combined` for web logs) and an **index** to store it in (create one, e.g. `web`). This is the [ingest → parse → index](#2-indexer--processing--storage) pipeline happening through the UI.
+**1. Get data in.** In Splunk Web, go to **Settings → Add Data → Upload** and pick a log file (Splunk's own **[tutorial dataset](#recommended-datasets)** is ideal). Splunk asks for a **sourcetype** (how to parse it — e.g. `access_combined` for web logs) and an **index** to store it in (create one, e.g. `web`). This is the [ingest → parse → index](#2-indexer--processing--storage) pipeline happening through the UI.
 
 **2. Search it.** Open **Search & Reporting** and run a search against the data you just loaded — the [SPL examples](#spl-by-example) now have real events to hit:
 
@@ -870,11 +870,11 @@ How Splunk gets used in the real world, by domain:
 
 ### Security / SOC (the focus here)
 
-- **SIEM & threat detection** — aggregating logs org-wide, running correlation searches, and alerting on threats (the entire use case this repo describes).
+- **SIEM & threat detection** — aggregating logs org-wide, running correlation searches, and alerting on threats (the core SOC use case).
 - **Incident investigation & DFIR** — pivoting through historical logs to reconstruct an attack timeline.
 - **Fraud detection** — spotting anomalous transactions or account behaviour at scale.
 - **Compliance reporting** — PCI-DSS, HIPAA, GDPR evidence generated from log data.
-- **Boss of the SOC (BOTS)** — Splunk's own blue-team CTF, widely used to *learn* SOC investigation in Splunk (see [datasets](#recommended-datasets-super-optional)).
+- **Boss of the SOC (BOTS)** — Splunk's own blue-team CTF, widely used to *learn* SOC investigation in Splunk (see [datasets](#recommended-datasets)).
 
 ### Data / business analysis
 
@@ -892,7 +892,7 @@ How Splunk gets used in the real world, by domain:
 
 ---
 
-## Securing data in Splunk *(optional)*
+## Securing data in Splunk
 
 Because Splunk holds sensitive log data (and *is* a security tool), hardening it matters:
 
@@ -901,7 +901,7 @@ Because Splunk holds sensitive log data (and *is* a security tool), hardening it
 - **Field masking / anonymisation** — redact or hash sensitive fields (PII, card numbers) at ingest so they're never stored in the clear.
 - **Authentication** — integrate with **LDAP / SAML / SSO** and enforce **MFA** rather than local accounts.
 - **Audit** — Splunk logs its own activity to the `_audit` index; monitor *who searched what*.
-- **Secure the pipeline** — TLS between forwarders, indexers, and search heads (see [encryption](#encrypting-data-super-optional)).
+- **Secure the pipeline** — TLS between forwarders, indexers, and search heads (see [encryption](#encrypting-data)).
 - **Protect the license & configs** — limit who can change inputs, alerts, and knowledge objects.
 
 > A SOC's SIEM is a high-value target: if an attacker blinds or tampers with Splunk, they blind the SOC. Securing it is part of securing the org.
@@ -923,11 +923,11 @@ Splunk's certification ladder (as a rough progression), plus what's useful for a
 
 **For a SOC career specifically:** start with **Core User → Power User** to get fluent in SPL, then target the **Cybersecurity Defense Analyst** cert. Broader security certs that complement it: **CompTIA Security+**, **CySA+**, and **Blue Team Level 1 (BTL1)**.
 
-> Splunk also offers **free training** and a free tier, so you can build toward these hands-on (see [guides](#guides-walkthroughs--demos-super-optional)).
+> Splunk also offers **free training** and a free tier, so you can build toward these hands-on (see [guides](#guides-walkthroughs--demos)).
 
 ---
 
-## Encrypting data *(super optional)*
+## Encrypting data
 
 Splunk protects data in two states:
 
@@ -939,7 +939,7 @@ Splunk protects data in two states:
 
 ---
 
-## Recommended datasets *(super optional)*
+## Recommended datasets
 
 To practice without a live environment, load a sample dataset:
 
@@ -953,7 +953,7 @@ To practice without a live environment, load a sample dataset:
 
 ---
 
-## Guides, walkthroughs & demos *(super optional)*
+## Guides, walkthroughs & demos
 
 Where to learn hands-on:
 
@@ -962,7 +962,7 @@ Where to learn hands-on:
 - **Splunk Education (free courses)** — the **Search Expert** learning path and other free eLearning.
 - **Boss of the SOC (BOTS)** — guided blue-team scenarios; many community write-ups walk through the answers.
 - **Splunk Lantern** — Splunk's use-case and how-to library.
-- **This repo's Docker lab** — see [DOCKER.md](DOCKER.md) to stand up your own Splunk instance and practice against real, self-generated data.
+- **The Docker lab** — see [DOCKER.md](DOCKER.md) to stand up your own Splunk instance and practice against real, self-generated data.
 - **Community** — the Splunk Community (`community.splunk.com`), r/Splunk, and YouTube channels for walkthroughs.
 
 ---
