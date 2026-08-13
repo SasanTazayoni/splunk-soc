@@ -1094,6 +1094,7 @@ Where to learn hands-on:
 - **Splunk Education (free courses)** - the **Search Expert** learning path and other free eLearning.
 - **Boss of the SOC (BOTS)** - guided blue-team scenarios; many community write-ups walk through the answers.
 - **Splunk Lantern** - Splunk's use-case and how-to library.
+- **[TryHackMe](https://tryhackme.com/)** - browser-based, guided cybersecurity labs; its **SOC Level 1** learning path and Splunk rooms are directly relevant for a junior blue-team role (great to name-drop in interviews).
 - **Video (start here) - [Splunk Tutorial for Beginners (Cyber Security Tools)](https://www.youtube.com/watch?v=3CiRs6WaWaU)** - covers the basics: setting up, getting data in, and searching. Best followed hands-on alongside your own instance.
 - **Video (follow-up) - [Splunk Basics Tutorial for Beginners | Cyber Security](https://www.youtube.com/watch?v=5U8FSgc47Js)** - builds on the basics with more of Splunk *in action* on real security use cases.
 - **The Docker lab** - see [docker.md](docker.md) to stand up your own Splunk instance and practice against real, self-generated data.
