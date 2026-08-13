@@ -70,6 +70,10 @@ This guide runs from **SOC fundamentals → what a SIEM is → Splunk in depth**
 
 This is the classic SOC structure. Alerts flow **up** the tiers; only what can't be resolved at one level is **escalated** to the next.
 
+![SOC tier pyramid - Tier 1 alert triage at the base, Tier 2 deep investigation in the middle, Tier 3 threat hunting and detection engineering at the apex](images/soc-pyramid.png)
+
+_The analyst tiers (1-3); Tier 4 is management. Image source: [Fortra](https://www.fortra.com/blog/skills-tiers-and-security-challenges-your-soc-faces)._
+
 ### Tier 1 - Monitoring / Triage Analyst _(1st line SOC)_
 
 The **front line** - "eyes on glass." They watch the alert queue in real time and are the first humans to see anything suspicious.
@@ -313,6 +317,10 @@ Most SOCs run incidents through a standard lifecycle. The widely used **NIST** m
 4. **Post-Incident Activity** - the "lessons learned" review; feed improvements back into detections and processes.
 
 (The **SANS** model is similar but splits it into six steps: Preparation, Identification, Containment, Eradication, Recovery, Lessons Learned.)
+
+![Cyber incident response life cycle as a six-stage loop - preparation, discovery and confirmation, containment and continuity, eradication, recovery, lessons learned](images/ir-lifecycle.png)
+
+_The lifecycle as a continuous loop - every incident feeds lessons back into preparation. Image source: [Delinea](https://delinea.com/blog/incident-response-lifecycle)._
 
 ---
 
@@ -613,6 +621,10 @@ The **Indexer** is the **engine room**. It receives data from the forwarders and
 - **Indexing** - writes the events into **indexes** on disk in a structure optimised for fast searching.
 - **Storage** - holds the data in **buckets** that age through hot → warm → cold → frozen tiers over time.
 - **Searching** - when a search runs, the indexers actually **execute it over their local data** and return results (they do the search work, not just storage).
+
+![Splunk bucket lifecycle - data ages from hot (open for write) to warm (read only) to cold (cheaper storage), then to frozen (archived or deleted)](images/buckets.webp)
+
+_Buckets age hot -> warm -> cold, then either roll to frozen (archived) or are deleted. Image source: [BigDataBeard](https://bigdatabeard.com/the-what-when-why-of-splunk-smartstore/)._
 
 In large environments, indexers are grouped into an **indexer cluster** for scale and resilience (data is replicated across peers so no single failure loses data).
 
@@ -1126,6 +1138,10 @@ Where to learn hands-on:
 - **False positive / true positive** - the core triage judgement: was the alert wrongly fired, or a real threat?
 - **Runbook / Playbook** - step-by-step procedures for handling a given alert type consistently.
 - **Escalation** - passing an incident up a tier when it exceeds the current level's scope.
+
+![Cyber Kill Chain - the seven attack stages: reconnaissance, weaponization, delivery, exploitation, installation, command and control, actions on objectives](images/cyber-kill-chain.png)
+
+_The seven stages of the Cyber Kill Chain - breaking any link disrupts the attack. Image source: [Cymulate](https://cymulate.com/cybersecurity-glossary/cyber-kill-chain/)._
 
 ---
 
