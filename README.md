@@ -357,6 +357,16 @@ The SOC's work runs on a stack of tooling - worth knowing the categories:
 
 Lowering **MTTD** and **MTTR** - detect faster, respond faster - is the SOC's central goal.
 
+### SLA, SLO, SLI (service-level targets)
+
+A nested set that's easy to mix up - they answer *"how fast/well do we promise to work, and are we hitting it?"* Especially important for **MSSP / MDR** providers, who commit to response-time targets for their clients:
+
+- **SLA - Service Level Agreement:** the **agreed/contractual promise**, usually with consequences if missed. E.g. *"respond to Critical alerts within 15 minutes."*
+- **SLO - Service Level Objective:** the **internal target** you set to stay safely inside the SLA. E.g. *"respond within 10 minutes, 95% of the time."*
+- **SLI - Service Level Indicator:** the **actual measured number**. E.g. *"median response time this month = 8 minutes."*
+
+> **SLI** (what you measure) → **SLO** (the target for it) → **SLA** (the promise you'll hit it, or else). All three lean on the same underlying data as **MTTD / MTTR**.
+
 ---
 
 ## SOC challenges
@@ -505,6 +515,7 @@ Although Splunk is a general **data platform** (used for IT ops, DevOps, and bus
 - **Security / SIEM** - log aggregation, threat detection, correlation, alerting, incident investigation (the SOC use case that's the focus here).
 - **IT operations & monitoring** - track system health, troubleshoot outages, watch performance metrics.
 - **DevOps / observability** - application logs, error tracking, deployment monitoring.
+- **Compliance & audit reporting** - generate evidence for standards like PCI-DSS, HIPAA, and GDPR from log data.
 - **Business analytics** - turn operational data (sales, web traffic, user behaviour) into dashboards and reports.
 
 **Why use it over alternatives:**
@@ -807,6 +818,7 @@ The three broad kinds of SPL commands:
 - **Search/filter** - narrow down events (`index=`, `sourcetype=`, `status=404`, keyword matches).
 - **Transform** - aggregate/reshape (`stats`, `chart`, `timechart`, `top`, `eval`, `dedup`).
 - **Present** - format the output (`table`, `sort`, `fields`, or feed a visualisation).
+- **Extract** - pull new fields out of raw text at search time with **`rex`** (regular-expression extraction) - handy when Splunk didn't auto-extract a field you need, e.g. `| rex "user=(?<username>\w+)"`.
 
 Worked, copy-pasteable SPL examples - searches, transformations, and visualisations - are in [SPL by example](#spl-by-example) below.
 
@@ -1109,6 +1121,7 @@ Where to learn hands-on:
 | **SIEM**         | Security Information & Event Management                                     |
 | **SOAR**         | Security Orchestration, Automation & Response                               |
 | **EDR / XDR**    | Endpoint / Extended Detection & Response                                    |
+| **NDR**          | Network Detection & Response                                                |
 | **IDS / IPS**    | Intrusion Detection / Prevention System                                     |
 | **IR**           | Incident Response                                                           |
 | **CSIRT / CERT** | Computer Security Incident Response Team / Computer Emergency Response Team |
@@ -1117,6 +1130,7 @@ Where to learn hands-on:
 | **IOC**          | Indicator of Compromise                                                     |
 | **TTP**          | Tactics, Techniques & Procedures                                            |
 | **MTTD / MTTR**  | Mean Time to Detect / Respond                                               |
+| **SLA / SLO / SLI** | Service Level Agreement / Objective / Indicator                         |
 | **MSSP / MDR**   | Managed Security Service Provider / Managed Detection & Response            |
 
 ---
