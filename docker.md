@@ -282,6 +282,8 @@ docker pull splunk/splunk:latest
 
 This fetches the pre-packaged **Splunk Enterprise** image (running as a 60-day trial). `latest` grabs the newest build; for a **reproducible** lab you can pin a version instead (e.g. `splunk/splunk:9.2`) - see [Tags](#tags---picking-a-version).
 
+> **Tip - the image has built-in help.** Run `docker run -it splunk/splunk help` to print the image's own documentation: the supported environment variables, accepted `SPLUNK_START_ARGS`, and configuration options straight from the image itself. Handy when a variable or token changes between releases.
+
 ## Step 2 - Run the Splunk container
 
 Start a container from the image:
