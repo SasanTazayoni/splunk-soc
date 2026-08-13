@@ -17,14 +17,16 @@ This guide runs from **SOC fundamentals → what a SIEM is → Splunk in depth**
 
 **SOC (Security Operations Centre)**
 
-- [Common tools](#common-tools) - the technology stack (SIEM, SOAR, EDR, IDS/IPS, TIP)
+- [The tiered model](#the-tiered-model-tiers--lines-of-support) - the roles: Tier 1 -> 4, who does what
+- [Functional divisions / specialised teams](#functional-divisions--specialised-teams) - IR, threat hunting, CTI, detection engineering
 - [The incident response lifecycle](#the-incident-response-lifecycle) - the process (NIST / SANS)
+- [Common event types to look out for](#common-event-types-to-look-out-for) - the detection checklist
+- [Common tools](#common-tools) - the technology stack (SIEM, SOAR, EDR, IDS/IPS, TIP)
+- [SOC metrics](#soc-metrics-how-a-soc-measures-itself) - MTTD, MTTR, dwell time
 - [SOC challenges](#soc-challenges)
 - [SOC best practices](#soc-best-practices)
-- [The tiered model](#the-tiered-model-tiers--lines-of-support) - roles: Tier 1 -> 4, who does what
-- [Functional divisions / specialised teams](#functional-divisions--specialised-teams) - IR, threat hunting, CTI, detection engineering
-- [Common event types to look out for](#common-event-types-to-look-out-for) - the detection checklist
-- [Data: the pipeline and what flows through it](#data-the-pipeline-and-what-flows-through-it)
+- [In-house vs outsourced (MSSP / MDR)](#in-house-vs-outsourced-mssp--mdr)
+- [Data: the pipeline and what flows through it](#data-the-pipeline-and-what-flows-through-it) - how data reaches the SOC
 
 **SIEM**
 
@@ -46,80 +48,19 @@ This guide runs from **SOC fundamentals → what a SIEM is → Splunk in depth**
 - [SPL by example](#spl-by-example) - searches, transformations, visualisations
 - [What you can build in Splunk](#what-you-can-build-in-splunk)
 - [Putting it together: a mini end-to-end walkthrough](#putting-it-together-a-mini-end-to-end-walkthrough)
-- [Securing data in Splunk](#securing-data-in-splunk)
 - [Apps vs add-ons](#apps-vs-add-ons)
-- [Case studies](#case-studies)
-- [Certification path](#certification-path)
+- [Securing data in Splunk](#securing-data-in-splunk)
 - [Encrypting data](#encrypting-data)
 - [AI with Splunk](#ai-with-splunk)
+- [Case studies](#case-studies)
+- [Certification path](#certification-path)
 - [Recommended datasets](#recommended-datasets)
 - [Guides, walkthroughs & demos](#guides-walkthroughs--demos)
 
 **Reference**
 
 - [Key frameworks & concepts](#key-frameworks--concepts) - MITRE ATT&CK, Kill Chain, IOC/TTP
-- [SOC metrics](#soc-metrics-how-a-soc-measures-itself) - MTTD, MTTR, dwell time
-- [In-house vs outsourced (MSSP / MDR)](#in-house-vs-outsourced-mssp--mdr)
 - [Quick glossary](#quick-glossary)
-
----
-
-## Common tools
-
-The SOC's work runs on a stack of tooling - worth knowing the categories:
-
-| Category                                                 | What it's for                                                                 | Examples of the category                             |
-| -------------------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------- |
-| **SIEM** (Security Information & Event Management)       | Central log collection, correlation, and alerting - the analyst's main screen | Splunk, Microsoft Sentinel, Elastic, QRadar          |
-| **SOAR** (Security Orchestration, Automation & Response) | Automate repetitive response steps via playbooks                              | Cortex XSOAR (standalone); often built into the SIEM |
-| **EDR / XDR** (Endpoint / Extended Detection & Response) | Detect and respond to threats on endpoints (and beyond)                       | CrowdStrike, Microsoft Defender, SentinelOne         |
-| **IDS / IPS** (Intrusion Detection / Prevention System)  | Detect (IDS) or block (IPS) malicious network traffic                         | Snort, Suricata                                      |
-| **Threat Intelligence Platform (TIP)**                   | Aggregate and operationalise threat intel / IOCs                              | MISP, Recorded Future                                |
-| **Ticketing / Case management**                          | Track incidents through their lifecycle                                       | ServiceNow, Jira                                     |
-
----
-
-## The incident response lifecycle
-
-Most SOCs run incidents through a standard lifecycle. The widely used **NIST** model has four phases:
-
-1. **Preparation** - tooling, playbooks, training, and access in place _before_ anything happens.
-2. **Detection & Analysis** - spot the incident and understand it (Tier 1 → Tier 2 territory).
-3. **Containment, Eradication & Recovery** - stop the spread, remove the threat, restore systems.
-4. **Post-Incident Activity** - the "lessons learned" review; feed improvements back into detections and processes.
-
-(The **SANS** model is similar but splits it into six steps: Preparation, Identification, Containment, Eradication, Recovery, Lessons Learned.)
-
----
-
-## SOC challenges
-
-Running a SOC is genuinely hard, for reasons worth knowing:
-
-- **Alert volume & fatigue** - a SOC can face tens of thousands of alerts a day, most of them false positives. Analysts become desensitised (**alert fatigue**) and risk missing the real one.
-- **False positives & endless tuning** - noisy detections waste time; keeping them tuned is never finished.
-- **Skills shortage & burnout** - cybersecurity talent is scarce, and 24×7 shift work drives high turnover.
-- **Blind spots** - you can't detect what you don't collect; a misconfigured or silent log source hides attacks.
-- **Data volume & cost** - ingesting and storing huge log volumes is expensive (Splunk has historically been licensed by data volume, so _what you choose to log_ has a direct cost).
-- **Evolving threats** - attackers constantly change their TTPs, so detections go stale and must be updated.
-- **Speed vs accuracy** - pressure to respond fast without over- or under-reacting.
-- **Tool sprawl** - many disconnected tools are hard to integrate and correlate across.
-
----
-
-## SOC best practices
-
-- **Automate the routine** - use **SOAR** playbooks for repetitive Tier 1 work, freeing analysts for judgement calls.
-- **Tune detections continuously** - cut false positives so real alerts aren't lost in the noise.
-- **Use playbooks/runbooks** - consistent, repeatable response instead of ad-hoc reactions.
-- **Map coverage to MITRE ATT&CK** - know which attacker techniques you can and can't detect.
-- **Be metrics-driven** - track MTTD/MTTR and actively drive them down.
-- **Hunt proactively** - don't only wait for alerts; assume breach and go looking.
-- **Integrate threat intelligence** - enrich alerts with context on known threats.
-- **Defence in depth** - the SOC is one layer; pair it with prevention (patching, hardening, least privilege).
-- **Protect & monitor the pipeline** - a source that stops logging is a blind spot, so alert on log-source health.
-- **24×7 coverage** - attackers don't keep office hours.
-- **Close the loop** - every incident should improve detections and playbooks (lessons learned).
 
 ---
 
@@ -360,6 +301,19 @@ Beyond the tier ladder, a mature SOC contains (or works closely with) these spec
 
 ---
 
+## The incident response lifecycle
+
+Most SOCs run incidents through a standard lifecycle. The widely used **NIST** model has four phases:
+
+1. **Preparation** - tooling, playbooks, training, and access in place _before_ anything happens.
+2. **Detection & Analysis** - spot the incident and understand it (Tier 1 → Tier 2 territory).
+3. **Containment, Eradication & Recovery** - stop the spread, remove the threat, restore systems.
+4. **Post-Incident Activity** - the "lessons learned" review; feed improvements back into detections and processes.
+
+(The **SANS** model is similar but splits it into six steps: Preparation, Identification, Containment, Eradication, Recovery, Lessons Learned.)
+
+---
+
 ## Common event types to look out for
 
 The recurring signals a SOC watches for, gathered into one detection checklist (this is the full set the [Tier 1 detection](#detection---what-theyre-looking-for) role scans for):
@@ -374,6 +328,77 @@ The recurring signals a SOC watches for, gathered into one detection checklist (
 - **Resource anomalies** - CPU/memory spikes (e.g. **cryptojacking** - see the EC2 example), unexpected new services.
 
 In Splunk terms, these map to **saved/correlation searches**, and related events can be grouped with **eventtypes** (Splunk's feature for tagging categories of events) to make them easier to search and alert on.
+
+---
+
+## Common tools
+
+The SOC's work runs on a stack of tooling - worth knowing the categories:
+
+| Category                                                 | What it's for                                                                 | Examples of the category                             |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------- |
+| **SIEM** (Security Information & Event Management)       | Central log collection, correlation, and alerting - the analyst's main screen | Splunk, Microsoft Sentinel, Elastic, QRadar          |
+| **SOAR** (Security Orchestration, Automation & Response) | Automate repetitive response steps via playbooks                              | Cortex XSOAR (standalone); often built into the SIEM |
+| **EDR / XDR** (Endpoint / Extended Detection & Response) | Detect and respond to threats on endpoints (and beyond)                       | CrowdStrike, Microsoft Defender, SentinelOne         |
+| **IDS / IPS** (Intrusion Detection / Prevention System)  | Detect (IDS) or block (IPS) malicious network traffic                         | Snort, Suricata                                      |
+| **Threat Intelligence Platform (TIP)**                   | Aggregate and operationalise threat intel / IOCs                              | MISP, Recorded Future                                |
+| **Ticketing / Case management**                          | Track incidents through their lifecycle                                       | ServiceNow, Jira                                     |
+
+---
+
+## SOC metrics (how a SOC measures itself)
+
+- **MTTD - Mean Time to Detect:** the average time taken to notice a threat after it becomes active.
+- **MTTR - Mean Time to Respond/Resolve:** how long from detection to containment/resolution.
+- **Dwell time** - how long a _specific_ attacker was actually present before being found; the real-world gap that MTTD aims to shrink (lower is better).
+- **False positive rate** - how much of the alert volume is noise (drives Tier 1 workload).
+- **Alert/ticket volume**, **escalation rate**, and **SLA adherence**.
+
+Lowering **MTTD** and **MTTR** - detect faster, respond faster - is the SOC's central goal.
+
+---
+
+## SOC challenges
+
+Running a SOC is genuinely hard, for reasons worth knowing:
+
+- **Alert volume & fatigue** - a SOC can face tens of thousands of alerts a day, most of them false positives. Analysts become desensitised (**alert fatigue**) and risk missing the real one.
+- **False positives & endless tuning** - noisy detections waste time; keeping them tuned is never finished.
+- **Skills shortage & burnout** - cybersecurity talent is scarce, and 24×7 shift work drives high turnover.
+- **Blind spots** - you can't detect what you don't collect; a misconfigured or silent log source hides attacks.
+- **Data volume & cost** - ingesting and storing huge log volumes is expensive (Splunk has historically been licensed by data volume, so _what you choose to log_ has a direct cost).
+- **Evolving threats** - attackers constantly change their TTPs, so detections go stale and must be updated.
+- **Speed vs accuracy** - pressure to respond fast without over- or under-reacting.
+- **Tool sprawl** - many disconnected tools are hard to integrate and correlate across.
+
+---
+
+## SOC best practices
+
+- **Automate the routine** - use **SOAR** playbooks for repetitive Tier 1 work, freeing analysts for judgement calls.
+- **Tune detections continuously** - cut false positives so real alerts aren't lost in the noise.
+- **Use playbooks/runbooks** - consistent, repeatable response instead of ad-hoc reactions.
+- **Map coverage to MITRE ATT&CK** - know which attacker techniques you can and can't detect.
+- **Be metrics-driven** - track MTTD/MTTR and actively drive them down.
+- **Hunt proactively** - don't only wait for alerts; assume breach and go looking.
+- **Integrate threat intelligence** - enrich alerts with context on known threats.
+- **Defence in depth** - the SOC is one layer; pair it with prevention (patching, hardening, least privilege).
+- **Protect & monitor the pipeline** - a source that stops logging is a blind spot, so alert on log-source health.
+- **24×7 coverage** - attackers don't keep office hours.
+- **Close the loop** - every incident should improve detections and playbooks (lessons learned).
+
+---
+
+## In-house vs outsourced (MSSP / MDR)
+
+Not every org runs its own SOC:
+
+- **In-house SOC** - built and staffed internally. Most control, highest cost.
+- **MSSP (Managed Security Service Provider)** - a third party provides SOC services (often monitoring) for many clients.
+- **MDR (Managed Detection & Response)** - a more hands-on managed service focused on detection _and_ active response, not just alerting.
+- **Hybrid / co-managed** - internal team plus an external provider (e.g. the provider covers overnight/24×7 monitoring).
+
+SOCs typically aim for **24×7×365** coverage, which is a big driver of both staffing models and the shift/tier structure.
 
 ---
 
@@ -930,6 +955,23 @@ index=web sourcetype=access_combined
 
 ---
 
+## Apps vs add-ons
+
+Both are **packaged bundles** you install to extend Splunk, and the terms are often used loosely - but there's a real distinction:
+
+| | **Add-on (TA - Technology Add-on)** | **App** |
+| --- | --- | --- |
+| **Purpose** | Gets data **in** and makes it usable - inputs, parsing, field extractions, CIM mapping. | Provides the **experience on top** - dashboards, reports, UI, workflow. |
+| **Has a UI?** | Usually **no** (it works behind the scenes). | Usually **yes** (it's what the user interacts with). |
+| **Example** | **Splunk Add-on for AWS** - knows how to ingest & parse CloudTrail. | **Splunk Enterprise Security** - the SIEM dashboards/workflow. |
+| **Analogy** | The **plumbing** - brings the data in, cleanly formatted. | The **rooms** - where you actually live and work with it. |
+
+**How they relate:** an **app often depends on add-ons**. Enterprise Security (an app) relies on many add-ons to normalise data (via the **CIM**) so its correlation searches work across sources. Typical flow: *install the add-on to ingest/normalise a source → install/use the app to analyse it.*
+
+Both are distributed via **[Splunkbase](https://splunkbase.com)**, Splunk's marketplace of thousands of community and vendor packages.
+
+---
+
 ## Securing data in Splunk
 
 Because Splunk holds sensitive log data (and *is* a security tool), hardening it matters:
@@ -946,20 +988,26 @@ Because Splunk holds sensitive log data (and *is* a security tool), hardening it
 
 ---
 
-## Apps vs add-ons
+## Encrypting data
 
-Both are **packaged bundles** you install to extend Splunk, and the terms are often used loosely - but there's a real distinction:
+Splunk protects data in two states:
 
-| | **Add-on (TA - Technology Add-on)** | **App** |
-| --- | --- | --- |
-| **Purpose** | Gets data **in** and makes it usable - inputs, parsing, field extractions, CIM mapping. | Provides the **experience on top** - dashboards, reports, UI, workflow. |
-| **Has a UI?** | Usually **no** (it works behind the scenes). | Usually **yes** (it's what the user interacts with). |
-| **Example** | **Splunk Add-on for AWS** - knows how to ingest & parse CloudTrail. | **Splunk Enterprise Security** - the SIEM dashboards/workflow. |
-| **Analogy** | The **plumbing** - brings the data in, cleanly formatted. | The **rooms** - where you actually live and work with it. |
+- **In transit** - enable **TLS/SSL** on the connections between **forwarders → indexers → search heads**, and on the web UI (HTTPS). This stops logs being sniffed as they move.
+- **At rest** - Splunk doesn't encrypt index buckets itself by default; you typically use **OS/disk-level encryption** (LUKS, BitLocker, cloud volume encryption) on the indexers' storage. Splunk Cloud handles at-rest encryption for you.
+- **Secrets** - Splunk encrypts stored passwords/tokens in config using a **splunk.secret** key; protect that file.
 
-**How they relate:** an **app often depends on add-ons**. Enterprise Security (an app) relies on many add-ons to normalise data (via the **CIM**) so its correlation searches work across sources. Typical flow: *install the add-on to ingest/normalise a source → install/use the app to analyse it.*
+> **Rule of thumb:** TLS everywhere for data in motion; disk encryption for data at rest; guard `splunk.secret`.
 
-Both are distributed via **[Splunkbase](https://splunkbase.com)**, Splunk's marketplace of thousands of community and vendor packages.
+---
+
+## AI with Splunk
+
+AI/ML is an increasingly central part of the Splunk story:
+
+- **Machine Learning Toolkit (MLTK)** - a Splunk app that brings ML into SPL: **anomaly detection**, forecasting, clustering, and building/predicting models directly on your data.
+- **UEBA (User & Entity Behaviour Analytics)** - ML that **baselines normal behaviour** for users/hosts and flags deviations (impossible travel, unusual data access) - detections rules alone would miss.
+- **Splunk AI Assistant** - natural-language help that can **generate and explain SPL**, lowering the barrier for analysts writing queries.
+- **The 2026 direction** - AI is used heavily to **cut alert noise**, surface correlations, and speed investigation, as SIEM/SOAR/XDR converge into more automated platforms (see the [2026 trend note](#siem---what-it-is-an-analogy-and-2026-tooling) above).
 
 ---
 
@@ -1010,29 +1058,6 @@ Splunk's certification ladder (as a rough progression), plus what's useful for a
 
 ---
 
-## Encrypting data
-
-Splunk protects data in two states:
-
-- **In transit** - enable **TLS/SSL** on the connections between **forwarders → indexers → search heads**, and on the web UI (HTTPS). This stops logs being sniffed as they move.
-- **At rest** - Splunk doesn't encrypt index buckets itself by default; you typically use **OS/disk-level encryption** (LUKS, BitLocker, cloud volume encryption) on the indexers' storage. Splunk Cloud handles at-rest encryption for you.
-- **Secrets** - Splunk encrypts stored passwords/tokens in config using a **splunk.secret** key; protect that file.
-
-> **Rule of thumb:** TLS everywhere for data in motion; disk encryption for data at rest; guard `splunk.secret`.
-
----
-
-## AI with Splunk
-
-AI/ML is an increasingly central part of the Splunk story:
-
-- **Machine Learning Toolkit (MLTK)** - a Splunk app that brings ML into SPL: **anomaly detection**, forecasting, clustering, and building/predicting models directly on your data.
-- **UEBA (User & Entity Behaviour Analytics)** - ML that **baselines normal behaviour** for users/hosts and flags deviations (impossible travel, unusual data access) - detections rules alone would miss.
-- **Splunk AI Assistant** - natural-language help that can **generate and explain SPL**, lowering the barrier for analysts writing queries.
-- **The 2026 direction** - AI is used heavily to **cut alert noise**, surface correlations, and speed investigation, as SIEM/SOAR/XDR converge into more automated platforms (see the [2026 trend note](#siem---what-it-is-an-analogy-and-2026-tooling) above).
-
----
-
 ## Recommended datasets
 
 To practice without a live environment, load a sample dataset:
@@ -1072,31 +1097,6 @@ Where to learn hands-on:
 - **False positive / true positive** - the core triage judgement: was the alert wrongly fired, or a real threat?
 - **Runbook / Playbook** - step-by-step procedures for handling a given alert type consistently.
 - **Escalation** - passing an incident up a tier when it exceeds the current level's scope.
-
----
-
-## SOC metrics (how a SOC measures itself)
-
-- **MTTD - Mean Time to Detect:** the average time taken to notice a threat after it becomes active.
-- **MTTR - Mean Time to Respond/Resolve:** how long from detection to containment/resolution.
-- **Dwell time** - how long a _specific_ attacker was actually present before being found; the real-world gap that MTTD aims to shrink (lower is better).
-- **False positive rate** - how much of the alert volume is noise (drives Tier 1 workload).
-- **Alert/ticket volume**, **escalation rate**, and **SLA adherence**.
-
-Lowering **MTTD** and **MTTR** - detect faster, respond faster - is the SOC's central goal.
-
----
-
-## In-house vs outsourced (MSSP / MDR)
-
-Not every org runs its own SOC:
-
-- **In-house SOC** - built and staffed internally. Most control, highest cost.
-- **MSSP (Managed Security Service Provider)** - a third party provides SOC services (often monitoring) for many clients.
-- **MDR (Managed Detection & Response)** - a more hands-on managed service focused on detection _and_ active response, not just alerting.
-- **Hybrid / co-managed** - internal team plus an external provider (e.g. the provider covers overnight/24×7 monitoring).
-
-SOCs typically aim for **24×7×365** coverage, which is a big driver of both staffing models and the shift/tier structure.
 
 ---
 
