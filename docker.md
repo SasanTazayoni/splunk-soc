@@ -315,6 +315,12 @@ docker run -d \
 | `splunk/splunk:latest` | The image to run (from Step 1). |
 
 > **Ports recap:** `8000` = web UI, `8088` = HEC (data in), `8089` = management API. Mapping `host:container` makes each reachable on your machine at `localhost:<port>`.
+>
+> **Why these numbers?** They aren't arbitrary - they're **Splunk's built-in defaults**, the ports the software listens on *inside* the container (set in `web.conf`, `server.conf`, etc.). That's why only the **host** side (left of the `:`) is safe to change on a conflict - the container side must match what Splunk actually uses. They all sit in the registered-port range (above 1024), so Splunk binds them without root/admin.
+>
+> **Which do you actually need?** `8089` is **mandatory** - it's the `splunkd` daemon itself, so Splunk won't run without it. `8000` is what you browse to. `8088` is only needed if you'll **send** data via HEC; a pure log-reading lab can drop it.
+>
+> **Other Splunk defaults** (not published here because this lab doesn't use them): **9997** = receiving data from forwarders, **8065** = app server / KV store REST. If you later add a forwarder feeding this instance, add `-p 9997:9997`.
 
 > **Heads-up on the terms token:** the exact `SPLUNK_GENERAL_TERMS` value (`--accept-sgt-current-at-splunk-com`) signals acceptance of Splunk's **General Terms** and **can change between image releases**. If a new image rejects this string on startup, check the current value in Splunk's official [docker-splunk documentation](https://splunk.github.io/docker-splunk/) / the [deploy guide](https://help.splunk.com/) and use the token it specifies.
 
