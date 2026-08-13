@@ -84,7 +84,7 @@ That single distinction is why containers are smaller, faster, and cheaper to ru
   └──────────────────────┘
 ```
 
-## One-line summary
+## In one line
 
 > A **VM** virtualises a whole computer (full OS per app - heavy and slow); a **container** virtualises just the OS layer (shared kernel, app-only - light and fast). For a disposable, reproducible SOC lab, containers win.
 
@@ -108,7 +108,7 @@ Each container runs in its **own walled-off space**. It has its own filesystem, 
 
 ### 2. Pre-packaged (built from an image)
 
-A container is created from an **image** - a ready-made, pre-packaged template that already contains the app and all its dependencies baked in.
+A container is created from an **image** - a ready-made, pre-packaged template that already contains the app and all its dependencies baked in (the [Images](#images) section covers this in depth).
 
 - You don't assemble Splunk piece by piece; you pull the official `splunk/splunk` **image** and it's *already* got everything set up correctly inside.
 - The image is **immutable** (read-only). Every container started from it is identical - that's what makes the setup reproducible across machines.
@@ -241,7 +241,7 @@ Before the deploy steps, get these in place. This is everything a teammate needs
 ## 1. Install Docker
 
 - **Windows / macOS** - install **[Docker Desktop](https://www.docker.com/products/docker-desktop/)**. On **Windows**, Docker Desktop uses the **WSL2** backend - accept the prompt to install/enable WSL2 if asked (or run `wsl --install` once in an admin PowerShell, then reboot).
-- **Linux** - install **Docker Engine** (`docker` + the Compose plugin) from your distro's package manager or Docker's official repo.
+- **Linux** - install **Docker Engine** (`docker` + the Compose plugin) via Docker's [official install docs](https://docs.docker.com/engine/install/).
 
 ## 2. Give Docker enough resources
 
@@ -399,7 +399,7 @@ docker logs splunk    # what did it say on the way down?
 
 # Reproducible setup with Docker Compose
 
-The `docker run` command above works, but it's a long line to remember, retype, and get right every time. **Docker Compose** captures the exact same setup in a **version-controlled file** so the whole lab comes up with **one command** - and it's the natural thing to **commit and share** with the team. This is the reproducibility the earlier concepts kept pointing at, delivered.
+The `docker run` command above works, but it's a long line to remember, retype, and get right every time. **[Docker Compose](https://docs.docker.com/compose/)** captures the exact same setup in a **version-controlled file** so the whole lab comes up with **one command** - and it's the natural thing to **commit and share** with the team. This is the reproducibility the earlier concepts kept pointing at, delivered.
 
 ## 1. Create `docker-compose.yml`
 
