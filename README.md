@@ -834,6 +834,8 @@ The three broad kinds of SPL commands:
 - **Present** - format the output (`table`, `sort`, `fields`, or feed a visualisation).
 - **Extract** - pull new fields out of raw text at search time with **`rex`** (regular-expression extraction) - handy when Splunk didn't auto-extract a field you need, e.g. `| rex "user=(?<username>\w+)"`.
 
+> **Filter by time first - it's the most efficient filter there is.** Narrowing the **time range** (the time picker, or `earliest`/`latest`) speeds up a search more than anything else. Splunk stores events in **time-ordered [buckets](#2-indexer---processing--storage)**, and every bucket knows its earliest/latest timestamp - so restricting the time range lets Splunk **skip whole buckets** that can't contain matching events, scanning far less data than any field filter can. After time, narrowing by `index` and `sourcetype` is the next most effective.
+
 Worked, copy-pasteable SPL examples - searches, transformations, and visualisations - are in [SPL by example](#spl-by-example) below.
 
 ---
