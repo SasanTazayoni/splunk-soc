@@ -9,7 +9,7 @@ A SOC is fundamentally a **blue team** (defensive) operation. It's usually struc
 1. **Tiers / lines** - a triage-and-escalation ladder (Tier 1 → Tier 2 → Tier 3), so cheap, high-volume work is filtered first and only the hard cases reach senior people.
 2. **Functional divisions** - specialised teams (threat intel, hunting, incident response, detection engineering, etc.) that the tiers draw on.
 
-This guide runs from **SOC fundamentals → what a SIEM is → Splunk in depth**. To actually try Splunk, the companion doc **[DOCKER.md](DOCKER.md)** shows how to stand up a real instance in a container.
+This guide runs from **SOC fundamentals → what a SIEM is → Splunk in depth**. To actually try Splunk, the companion doc **[docker.md](docker.md)** shows how to stand up a real instance in a container.
 
 ---
 
@@ -337,9 +337,10 @@ The SOC's work runs on a stack of tooling - worth knowing the categories:
 
 | Category                                                 | What it's for                                                                 | Examples of the category                             |
 | -------------------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------- |
-| **SIEM** (Security Information & Event Management)       | Central log collection, correlation, and alerting - the analyst's main screen | Splunk, Microsoft Sentinel, Elastic, QRadar          |
+| **SIEM** (Security Information & Event Management)       | Central log collection, correlation, and alerting - the analyst's main screen | Splunk, Microsoft Sentinel, Elastic, QRadar, Wazuh (open-source) |
 | **SOAR** (Security Orchestration, Automation & Response) | Automate repetitive response steps via playbooks                              | Cortex XSOAR (standalone); often built into the SIEM |
 | **EDR / XDR** (Endpoint / Extended Detection & Response) | Detect and respond to threats on endpoints (and beyond)                       | CrowdStrike, Microsoft Defender, SentinelOne         |
+| **NDR** (Network Detection & Response)                   | Analyse network traffic to spot hidden lateral movement and C2 that endpoint/log tools miss | Darktrace, Vectra AI                    |
 | **IDS / IPS** (Intrusion Detection / Prevention System)  | Detect (IDS) or block (IPS) malicious network traffic                         | Snort, Suricata                                      |
 | **Threat Intelligence Platform (TIP)**                   | Aggregate and operationalise threat intel / IOCs                              | MISP, Recorded Future                                |
 | **Ticketing / Case management**                          | Track incidents through their lifecycle                                       | ServiceNow, Jira                                     |
@@ -815,7 +816,7 @@ Worked, copy-pasteable SPL examples - searches, transformations, and visualisati
 
 The [What is SPL?](#what-is-spl) section above introduces the pipe-based search language. Here are **worked examples** in the three categories you'll use daily. Read each `|` as "then send the results into…".
 
-> **To run these yourself**, you'll need a working Splunk instance - stand one up with the [Docker lab](DOCKER.md#deploying-splunk-in-docker).
+> **To run these yourself**, you'll need a working Splunk instance - stand one up with the [Docker lab](docker.md#deploying-splunk-in-docker).
 
 > **⚠️ These examples are illustrative.** They use made-up index names like `index=web` and `index=security` to show the *shape* of a search - but a **fresh Splunk install has no such indexes**. Out of the box you only get `main` (empty until you add data) and `_internal` (Splunk's own logs). So copy-pasting `index=web …` on a new instance returns **zero results** - that's expected, not a bug. To actually see data, either [onboard some](#how-does-splunk-onboard--ingest-data) into an index, or run the example below against `_internal`.
 
@@ -926,7 +927,7 @@ For a SOC specifically, the high-value outputs are **correlation-search-driven a
 
 ## Putting it together: a mini end-to-end walkthrough
 
-The sections above cover the pieces in isolation - architecture, SPL, what you can build. Here's how they connect in the workflow you'd actually follow: **get data in → search it → visualise it → alert on it.** This assumes a running instance from the [Docker lab](DOCKER.md#deploying-splunk-in-docker).
+The sections above cover the pieces in isolation - architecture, SPL, what you can build. Here's how they connect in the workflow you'd actually follow: **get data in → search it → visualise it → alert on it.** This assumes a running instance from the [Docker lab](docker.md#deploying-splunk-in-docker).
 
 **1. Get data in.** In Splunk Web, go to **Settings → Add Data → Upload** and pick a log file (Splunk's own **[tutorial dataset](#recommended-datasets)** is ideal). Splunk asks for a **sourcetype** (how to parse it - e.g. `access_combined` for web logs) and an **index** to store it in (create one, e.g. `web`). This is the [ingest → parse → index](#2-indexer---processing--storage) pipeline happening through the UI.
 
@@ -1083,7 +1084,7 @@ Where to learn hands-on:
 - **Splunk Lantern** - Splunk's use-case and how-to library.
 - **Video (start here) - [Splunk Tutorial for Beginners (Cyber Security Tools)](https://www.youtube.com/watch?v=3CiRs6WaWaU)** - covers the basics: setting up, getting data in, and searching. Best followed hands-on alongside your own instance.
 - **Video (follow-up) - [Splunk Basics Tutorial for Beginners | Cyber Security](https://www.youtube.com/watch?v=5U8FSgc47Js)** - builds on the basics with more of Splunk *in action* on real security use cases.
-- **The Docker lab** - see [DOCKER.md](DOCKER.md) to stand up your own Splunk instance and practice against real, self-generated data.
+- **The Docker lab** - see [docker.md](docker.md) to stand up your own Splunk instance and practice against real, self-generated data.
 - **Community** - the Splunk Community (`community.splunk.com`), r/Splunk, and YouTube channels for walkthroughs.
 
 ---
@@ -1122,4 +1123,4 @@ Where to learn hands-on:
 
 ## Try it yourself - the Docker lab
 
-This guide is the theory and reference. To get hands-on, **[DOCKER.md](DOCKER.md)** walks through standing up a real **Splunk Enterprise** instance in a Docker container - prerequisites, a step-by-step deploy, a one-command Docker Compose setup, and troubleshooting. Pair it with the [SPL by example](#spl-by-example) and [end-to-end walkthrough](#putting-it-together-a-mini-end-to-end-walkthrough) sections above to practise against real data.
+This guide is the theory and reference. To get hands-on, **[docker.md](docker.md)** walks through standing up a real **Splunk Enterprise** instance in a Docker container - prerequisites, a step-by-step deploy, a one-command Docker Compose setup, and troubleshooting. Pair it with the [SPL by example](#spl-by-example) and [end-to-end walkthrough](#putting-it-together-a-mini-end-to-end-walkthrough) sections above to practise against real data.
