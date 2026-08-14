@@ -663,6 +663,8 @@ Beyond the core three, a production Splunk has management roles you'll hear ment
 | **License Manager**                | Tracks data-volume licensing across the deployment.                  |
 | **Monitoring Console**             | Dashboards for the health of Splunk itself.                          |
 
+> **On the Monitoring Console:** it's Splunk's built-in admin view for the health of the **deployment itself** (not your data) - indexing throughput, search performance, resource usage, licence consumption, and queue backups. It runs from one instance and can watch a whole distributed/clustered deployment, so it's where an admin goes to catch problems like a **blocked queue**, slow searches, or an indexer falling behind.
+
 For a small lab, none of these matter - a **single all-in-one instance** plays all three core roles at once (see [Deployment options](#deployment-options-scaling-the-search-head--indexers) below).
 
 ---
@@ -954,7 +956,7 @@ index=security "failed password"
 These are the building blocks a SOC produces in Splunk, from simplest to richest:
 
 - **Reports** - a saved search you re-run or schedule (e.g. a daily "top failed logins" report emailed to the team).
-- **Alerts** - a scheduled/real-time search that **triggers an action** (email, ticket, webhook, SOAR playbook) when its condition fires - the backbone of automated detection.
+- **Alerts** - a scheduled/real-time search that **triggers an action** (email, ticket, webhook, SOAR playbook) when its condition fires - essentially a **report with a triggering condition + action added on top**, and the backbone of automated detection. (So the progression is: **search → save it (report) → add a trigger + action (alert)** - all the same underlying saved search.)
 - **Dashboards** - panels of visualisations giving a **live operational view**; built from **Simple XML** or the newer **Dashboard Studio**.
 - **Visualisations** - tables, timecharts, single-value KPIs, bar/pie charts, maps, etc.
 - **Data models & pivots** - a structured layer over your data so non-SPL users can build reports via a point-and-click **Pivot** interface.
