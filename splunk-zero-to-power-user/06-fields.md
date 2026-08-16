@@ -16,7 +16,6 @@ After a search runs, the **left-hand sidebar** lists the fields found in the res
 - By default this is **`host`, `source`, `sourcetype`** (the core metadata every event has).
 - You choose what appears here - click any field and **Select** it to pin it, so its value shows on every event.
 - **Add the fields that matter** (e.g. `categoryId`) so the important data shows at a glance under each event, instead of expanding every event to read the raw text. More selected fields = a clearer picture of the result set.
-- Clicking a field in the sidebar also lets you **filter to all events with a given value** (add it straight to the search) - a fast way to narrow from "everything" to "just the events with this data."
 
 ### Interesting Fields
 

@@ -103,11 +103,9 @@ index=web OR index=security | stats sum(bytes) as Total_Bytes | eval Total_Bytes
 
 The difference: the first prints something like `1234567`; the second prints `1,234,567`. The **value is identical** - `tostring(…, "commas")` only changes how it's **displayed**. One caveat: it converts the number into a **string**, so do any maths first and apply this formatting **last**, at the end of the search.
 
-## Worked command examples
+## Worked example: `fields` vs `table`
 
-The commands below are defined as reference in the main guide ([`fields`/`table`/`dedup`/`sort`](../README.md#spl-by-example)); here are the worked before/after examples from the course.
-
-### `fields` vs `table`
+These commands are defined as reference in the main guide ([`fields`/`table`/`dedup`/`sort`](../README.md#spl-by-example)); the worked before/after examples are below.
 
 `index=web | fields clientip, action, categoryId, status` keeps the normal **event list** - just limited to those fields:
 
@@ -117,7 +115,7 @@ The commands below are defined as reference in the main guide ([`fields`/`table`
 
 ![table renders the results as ordered statistics columns](../images/table-search.png)
 
-### `dedup`
+## Worked example: `dedup`
 
 `index=web | table clientip | dedup clientip` collapses **17,178 events down to the 182 unique client IPs**:
 

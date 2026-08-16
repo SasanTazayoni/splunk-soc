@@ -30,9 +30,7 @@ If yes, it's a transforming search - and its output is ready to become a chart.
 
 (`chart` and `timechart` from the first screenshot are the chart-oriented transforming commands - see [Basic visualisations](../README.md#spl-by-example) in the main guide.)
 
-## Worked examples
-
-### `top` - from a field's "Top values"
+## Worked example: `top` - a field's "Top values"
 
 Run `index=web`, then pick a field to work with - here **`file`**:
 
@@ -42,7 +40,7 @@ Click **Top values** and Splunk runs a `top` on that field, listing the most com
 
 ![top values for the file field, in descending order](../images/top-20.png)
 
-### `rare` - least common values
+## Worked example: `rare` - least common values
 
 `index=web | rare limit=1 categoryId` returns the single **least common** `categoryId` - here `SPORTS` (529 events, ~4.49%):
 
