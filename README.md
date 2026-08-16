@@ -734,7 +734,7 @@ The vocabulary you'll meet constantly - consolidated in one place:
 | **Source**                 | The file, stream, or input an event came from (e.g. `/var/log/auth.log`).                                                                             |
 | **Sourcetype**             | The **format/type** of the data (e.g. `access_combined`, `linux_secure`) - tells Splunk how to parse it.                                              |
 | **Host**                   | The device/machine the event originated from.                                                                                                         |
-| **Field**                  | A name-value pair extracted from an event (e.g. `status=404`, `user=alice`). Splunk auto-extracts many; you can define more.                          |
+| **Field**                  | A name-value pair extracted from an event (e.g. `status=404`, `user=alice`), searchable by name. Splunk auto-extracts many; **add-ons supply more** for their data formats; and you can define your own.                          |
 | **Fields `_time`, `_raw`** | `_time` is the event's timestamp (the backbone of everything); `_raw` is the original unparsed text.                                                  |
 | **SPL**                    | Search Processing Language - the query language (see [What is SPL?](#what-is-spl)).                                                                   |
 | **Search**                 | An SPL query run over indexed data.                                                                                                                   |
@@ -837,6 +837,35 @@ The three broad kinds of SPL commands:
 - **Extract** - pull new fields out of raw text at search time with **`rex`** (regular-expression extraction) - handy when Splunk didn't auto-extract a field you need, e.g. `| rex "user=(?<username>\w+)"`.
 
 > **Filter by time first - it's the most efficient filter there is.** Narrowing the **time range** (the time picker, or `earliest`/`latest`) speeds up a search more than anything else. Splunk stores events in **time-ordered [buckets](#2-indexer---processing--storage)**, and every bucket knows its earliest/latest timestamp - so restricting the time range lets Splunk **skip whole buckets** that can't contain matching events, scanning far less data than any field filter can. After time, narrowing by `index` and `sourcetype` is the next most effective.
+
+### Search operators
+
+Within the search/filter part you combine terms with **standard operators**:
+
+| Operator | Meaning | Example |
+| --- | --- | --- |
+| `AND` | Both must match (this is the **default** between terms, so it's often omitted). | `status=404 AND method=GET` |
+| `OR` | Either may match. | `status=404 OR status=500` |
+| `NOT` | Exclude matches. | `status=404 NOT clientip=10.0.0.5` |
+| `=` / `!=` | Field equals / does not equal a value. | `user!=admin` |
+| `<` `>` `<=` `>=` | Numeric/lexical comparison. | `bytes>1000` |
+| `*` | **Wildcard** - matches any number of characters. | `uri_path=/admin*` |
+| `( )` | **Group** terms to control precedence. | `(status=404 OR status=500) AND method=GET` |
+| `"..."` | Match an **exact phrase** (spaces/punctuation included). | `"GET /login"` |
+
+> **Boolean keywords must be UPPERCASE** (`AND`/`OR`/`NOT`) - lowercase `and` is treated as a search term, not an operator.
+>
+> **Field names are case-sensitive; values are not.** `status=404` needs the field named exactly `status` (not `Status`), but the value match in `user=admin` also matches `Admin` / `ADMIN`.
+>
+> **`!=` is narrower than `NOT`.** `status!=200` matches only events that **have** a `status` field whose value isn't 200. `NOT status=200` matches those **plus** events with **no** `status` field at all - so `!=` returns a **subset** of `NOT`. Use `NOT` when "field is missing" should also count.
+
+### Search modes (fast, smart, verbose)
+
+The selector to the right of the search bar controls how much work Splunk does - a **speed vs completeness** trade-off:
+
+- **Fast** - pulls the least data (skips full field discovery), so it returns quickest. Good once you know exactly what you're looking for.
+- **Verbose** - returns the **most information** (all fields, full event data), so it's the slowest.
+- **Smart** (the default) - checks the search for **transforming commands** (like `stats`/`chart`) and picks for you: fast-style behaviour for reporting searches, verbose-style for plain event searches.
 
 Worked, copy-pasteable SPL examples - searches, transformations, and visualisations - are in [SPL by example](#spl-by-example) below.
 
@@ -948,6 +977,34 @@ index=security "failed password"
 > A **multi-series line chart**: failed logins per hour, split by source IP.
 
 > **The pattern:** _search to retrieve → transform to aggregate → choose a visualisation to present._ Almost every dashboard panel is a saved search of exactly this shape.
+
+### `fields` vs `table`
+
+Both limit which fields you see, but they do different jobs:
+
+- **`fields`** controls **which fields are carried through the pipeline** - it keeps the normal event view, and can **include or exclude**. It affects downstream commands (and, used early, can speed a search up by dropping data).
+  - `... | fields clientip, status` - keep only these fields (still shown as events).
+  - `... | fields - _raw` - **remove** a field (the `-` excludes).
+- **`table`** is a **formatting/display** command - it renders the results as a **table** with the columns you name, **in that order**. It's typically the last command, and it doesn't feed fields onward the way `fields` does.
+  - `... | table _time, clientip, status` - show these as ordered table columns.
+
+Rule of thumb: use **`fields`** to shape *what data flows through* the search (and for performance); use **`table`** to *present* the final output as tidy columns. (Worked before/after examples with screenshots are in the [course notes](splunk-zero-to-power-user/07-spl-syntax-colours.md).)
+
+### `dedup`
+
+`dedup <field>` removes **duplicate events** by a field, keeping the **first** occurrence of each value - so you get one row per unique value, useful for turning a noisy result set into a distinct list. For example, `index=web | table clientip | dedup clientip` collapses many events down to just the unique client IPs (worked screenshot in the [course notes](splunk-zero-to-power-user/07-spl-syntax-colours.md)).
+
+> Related: `stats count by clientip` also yields one row per unique IP but **aggregates** (with a count), whereas `dedup` keeps whole **events**; the function `values(clientip)` is another way to list uniques.
+
+### `sort`
+
+`sort <field>` orders results by a field - **ascending by default**, or **descending** with a `-` prefix. Add more fields as left-to-right tie-breakers.
+
+- `... | sort clientip` - ascending (A→Z, low→high).
+- `... | sort -count` - descending (most first) - the usual pairing after `stats count`.
+- `... | sort -count, clientip` - by `count` descending, then `clientip` ascending to break ties.
+
+> Gotcha: `sort` returns only the first **10,000** results by default - use `sort 0 -count` to sort the entire result set.
 
 ---
 
