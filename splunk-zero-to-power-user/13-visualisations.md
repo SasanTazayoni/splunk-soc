@@ -118,7 +118,7 @@ It reads the lookup, then runs `iplocation` on the **`ip_address`** field, enric
 
 - **What it does:** aggregates results **by geographic location** (using lat/long) into the form a **cluster map** needs.
 - **Why it's useful:** shows **where** activity is happening - spot traffic or attacks concentrated in a region.
-- **Example:** `index=web | iplocation clientip | geostats count by clientip` - a map of request counts by location (pair it with `iplocation` first to get the coordinates).
+- **Example:** `index=web | iplocation clientip | geostats count by clientip` - a map of request counts by location.
 - **Common args:** `latfield`, `longfield` (which fields hold the coordinates), `globallimit`, `locallimit` (cap how many series overall / per cluster).
 
 In action, plotting the `peopleinfo` lookup on a map:
