@@ -48,8 +48,8 @@ A **drilldown** makes a dashboard panel (or report) **interactive** - clicking a
 
 ![drilldown - actions, tokens, and export](../images/drilldown.png)
 
-- **Actions** - what a click *does*. It can **link to a search**, **link to a dashboard**, or **link to a report** - carrying you (and the value you clicked) somewhere with more detail.
-- **`$tokens$`** - **variables** (written `$token$`) that capture what you clicked and **pass it from panel to panel** - the mechanism that makes drilldowns dynamic (see *Manage tokens* below, and [Tokens in action](#tokens-in-action), for how).
+- **Actions** - what a click _does_. It can **link to a search**, **link to a dashboard**, or **link to a report** - carrying you (and the value you clicked) somewhere with more detail.
+- **`$tokens$`** - **variables** (written `$token$`) that capture what you clicked and **pass it from panel to panel** - the mechanism that makes drilldowns dynamic (see _Manage tokens_ below, and [Tokens in action](#tokens-in-action), for how).
 - **Export** - export the results as a **PDF**, **print** them, or **include them in a report**.
 
 So a drilldown turns a static number on a dashboard into a **starting point**: click it, pass its value along as a token, and land in a filtered search/dashboard/report that explains it.
@@ -91,7 +91,7 @@ The **token value** dropdown lists what you can capture from the click:
 
 - **`$click.value$`** - the leftmost column's value in the clicked row.
 - **`$click.value2$`** - the **specific cell** the user clicked.
-- **`$click.name$` / `$click.name2$`** - the column *name* (leftmost / clicked).
+- **`$click.name$` / `$click.name2$`** - the column _name_ (leftmost / clicked).
 - **`$row.<fieldname>$`** - any field's value from the clicked row.
 - **`$earliest$` / `$latest$`** - the time range of the clicked row.
 
@@ -99,9 +99,9 @@ The **token value** dropdown lists what you can capture from the click:
 
 ![Add Panel - a new User Input panel with search index=* $userclick$](../images/add-panel.png)
 
-Here the *User Input* panel's search is `index=* $userclick$` - so it filters on whatever `userclick` is set to.
+Here the _User Input_ panel's search is `index=* $userclick$` - so it filters on whatever `userclick` is set to.
 
-**3. Click - and the second panel auto-searches.** Clicking a value in the first panel sets `userclick` to that value, and the *User Input* panel **automatically re-runs** `index=* <clicked value>`, showing the matching events:
+**3. Click - and the second panel auto-searches.** Clicking a value in the first panel sets `userclick` to that value, and the _User Input_ panel **automatically re-runs** `index=* <clicked value>`, showing the matching events:
 
 ![the User Input panel auto-searching with the value clicked in the first panel](../images/auto-search.png)
 
@@ -160,4 +160,4 @@ index=_internal $loglevel$
 
 The token `$loglevel$` becomes `INFO`, so the search effectively runs as `index=_internal INFO | …` and the panel now shows **only INFO-level messages**. Change the input and Submit again and the panel re-runs with the new value. That's the whole point of a token: it **carries the user's choice into the search**, making one panel serve many filters.
 
-> **Time tokens too:** a token isn't limited to a value like a log level - a **time-range input** can drive a **time token** that sets the search's **time range**. Add a time-picker input and its selection (via `$token.earliest$` / `$token.latest$`) controls the window each panel searches over - so the user can pick both *what* to filter and *when* to look.
+> **Time tokens too:** a token isn't limited to a value like a log level - a **time-range input** can drive a **time token** that sets the search's **time range**. Add a time-picker input and its selection (via `$token.earliest$` / `$token.latest$`) controls the window each panel searches over - so the user can pick both _what_ to filter and _when_ to look.
