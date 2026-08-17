@@ -26,6 +26,7 @@ Screenshots throughout this folder are from the course unless noted otherwise.
 | 12 | Lookups | [12-lookups.md](12-lookups.md) |
 | 13 | Visualising your data | [13-visualisations.md](13-visualisations.md) |
 | 14 | Reports & drilldowns | [14-reports-and-drilldowns.md](14-reports-and-drilldowns.md) |
+| 15 | Alerts | [15-alerts.md](15-alerts.md) |
 
 ## Conventions
 
