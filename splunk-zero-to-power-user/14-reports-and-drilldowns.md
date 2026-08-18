@@ -109,7 +109,7 @@ That's the full **panel-to-panel** flow: **click panel A → it sets the `usercl
 
 ## Home dashboard
 
-You can make a dashboard your **home dashboard** - the one that greets you when you open the app instead of the default landing page. Go to **Settings → Dashboards**, find the dashboard, and choose **Edit → Set as Home Dashboard**. Handy for putting your most-used monitoring view front and centre.
+You can make a dashboard your **home dashboard** - the one that greets you when you open the app instead of the default landing page. Open the dashboard (from the **Dashboards** tab in Search & Reporting, or **Settings → User interface → Views**), then use its **Edit** menu → **Set as Home Dashboard**. Handy for putting your most-used monitoring view front and centre.
 
 For example, this search builds a tidy table you might want on that home dashboard - and it recaps commands from earlier chapters:
 
