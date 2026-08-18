@@ -1,6 +1,6 @@
 # Tags & Event Types
 
-Two **knowledge objects** for **labelling** and **categorising** events. Both are defined in the main [glossary](../README.md#basic-terms-in-splunk-glossary), and [05 - creating an eventtype](05-knowledge-objects.md#example-creating-an-eventtype) walks through building one. This is the concept chapter.
+Two **knowledge objects** for **labelling** and **categorising** events. Both are defined in the main [glossary](../README.md#basic-terms-in-splunk-glossary), and [05 - creating an event type](05-knowledge-objects.md#example-creating-an-eventtype) walks through building one. This is the concept chapter.
 
 > Screenshots in this file are from the Udemy course _Splunk: Zero to Power User_.
 
@@ -66,6 +66,6 @@ So an event type categorises a *pattern of events*, and can itself carry tags; a
 
 ## Creating them
 
-For the hands-on build (Settings → Knowledge → Event types → New, with the **Color**, **Priority**, and **Tag(s)** fields), see [05 - creating an eventtype](05-knowledge-objects.md#example-creating-an-eventtype).
+For the hands-on build (Settings → Knowledge → Event types → New, with the **Color**, **Priority**, and **Tag(s)** fields), see [05 - creating an event type](05-knowledge-objects.md#example-creating-an-eventtype).
 
 > **Set permissions.** Tags and event types are **knowledge objects** - default to private, so set the **Owner** and share them for the team to use. See [knowledge objects](05-knowledge-objects.md#sharing--governance).
