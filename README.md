@@ -4,7 +4,7 @@
 
 A **Security Operations Center (SOC)** is the team (and the function) responsible for **continuously monitoring, detecting, analysing, and responding to cybersecurity threats** across an organisation. Think of it as the organisation's security "control room" - people, processes, and tooling working together to catch attacks early and respond fast when something gets through. (Note a SOC is primarily about **detection and response**, not prevention - keeping attackers out in the first place is mostly the job of firewalls, patching, and access controls.)
 
-> **Analogy - cameras, not a guard in every room.** You can't post a security guard in every room of a building, but you _can_ put a **camera** in each one and watch them all from a single control room. A SOC works the same way: it can't place a person on every server, laptop, and account, so instead everything is **instrumented** - logs and telemetry are the "cameras" - and analysts watch those feeds centrally through the **SIEM** (Security Information and Event Management - the central platform the whole SOC works from; [explained in full below](#siem---what-it-is-an-analogy-and-2026-tooling)) to spot where the problem is. That's the whole idea behind centralised monitoring.
+> **Analogy - cameras, not a guard in every room.** You can't post a security guard in every room of a building, but you _can_ put a **camera** in each one and watch them all from a single control room. A SOC works the same way: it can't place a person on every server, laptop, and account, so instead everything is **instrumented** - logs and telemetry are the "cameras" - and analysts watch those feeds centrally through the **[SIEM](#siem---what-it-is-an-analogy-and-2026-tooling)** (Security Information and Event Management - the central platform the whole SOC works from) to spot where the problem is. That's the whole idea behind centralised monitoring.
 
 A SOC is fundamentally a **blue team** (defensive) operation. It's usually structured in two overlapping ways at once:
 
@@ -504,6 +504,10 @@ The analytical goal is the same across all of them: establish what **normal** lo
 **What is a SIEM?** A **SIEM** (Security Information & Event Management) is the SOC's core platform: it **ingests machine-generated data** - logs and events from every source - and **parses it into a searchable, correlated, alertable form**, turning raw machine noise into human-readable, actionable signal. It's where analysts monitor feeds, run dashboards, and receive their alerts. (See the data-pipeline section above for how data actually reaches it.)
 
 **Analogy - the control-room monitor wall.** If the org's logs are the security **cameras** (from the analogy at the top of this doc), the **SIEM is the wall of monitors in the control room, plus the smart software behind it.** It takes every camera feed - thousands of them, each in a different format - puts them on one screen, time-syncs and labels them, and automatically **flashes an alert** when something looks off. Without it, a guard would have to squint at a thousand feeds at once; with it, the important frame lights up on its own.
+
+![A SOC analyst's dashboards - the SIEM's "wall of monitors" in the control room](images/SIEM.webp)
+
+_The SIEM as the control-room "wall of monitors." Image source: [PlannedLink](https://plannedlink.io/2025/09/22/a-day-in-the-life-of-a-soc-analyst-what-really-happens-behind-the-screens/)._
 
 **SIEM software (2026).** The major platforms you'll meet as of 2026:
 
