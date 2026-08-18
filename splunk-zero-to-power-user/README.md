@@ -27,7 +27,8 @@ Screenshots throughout this folder are from the course unless noted otherwise.
 | 13  | Visualising your data         | [13-visualisations.md](13-visualisations.md)                         |
 | 14  | Reports & drilldowns          | [14-reports-and-drilldowns.md](14-reports-and-drilldowns.md)         |
 | 15  | Alerts                        | [15-alerts.md](15-alerts.md)                                         |
-| 16  | Tags & event types            | [16-tags-and-event types.md](16-tags-and-event types.md)             |
+| 16  | Tags & event types            | [16-tags-and-event-types.md](16-tags-and-event-types.md)             |
+| 17  | Macros                        | [17-macros.md](17-macros.md)                                         |
 
 ## Conventions
 
