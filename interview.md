@@ -46,6 +46,8 @@ Interview-ready answers for SOC analyst / Splunk roles. Kept punchy and memorabl
 - [What are the components of Splunk architecture?](#what-are-the-components-of-splunk-architecture)
 - [How does data get into Splunk?](#how-does-data-get-into-splunk)
 - [What are the basic terms in Splunk?](#what-are-the-basic-terms-in-splunk)
+- [Why is the source type important?](#why-is-the-source-type-important)
+- [Host vs src?](#host-vs-src)
 - [What is schema-on-read?](#what-is-schema-on-read)
 - [Splunk apps vs add-ons?](#splunk-apps-vs-add-ons)
 - [What can you build in Splunk?](#what-can-you-build-in-splunk)
@@ -370,6 +372,26 @@ Whichever route, data is parsed into events and stored in an **index**, ready to
 - **Field** - a name-value pair extracted from an event (`status=404`, `user=alice`).
 - **Event** - a single record; usually one log line, with `_time` (timestamp) and `_raw` (original text).
 - **Eventtype / knowledge object** - user-created content that tags and enriches data for reuse.
+
+### Why is the source type important?
+
+The **sourcetype tells Splunk how to parse the data**, so getting it right (or wrong) affects everything downstream:
+
+- **Parsing** - it drives **timestamp recognition**, **line breaking** (where one event ends and the next begins), and **field extraction**. The wrong sourcetype means broken timestamps, mis-split events, and missing fields.
+- **Knowledge & add-ons** - field extractions, CIM mappings, and an add-on's parsing are all **keyed to the sourcetype**, so the right one applies the right logic automatically (e.g. `access_combined` extracts `clientip`, `status`, `bytes` for you).
+- **Searchability** - consistent sourcetypes let you filter and **correlate across similar data** (`sourcetype=linux_secure`), and it's an efficient filter alongside index and time.
+
+In short: sourcetype is the key that maps raw data to the correct parsing and field logic - get it wrong and your searches, dashboards, and detections are all built on mis-parsed data.
+
+### Host vs src?
+
+Easy to confuse, but they sit at different levels:
+
+- **`host`** - Splunk **metadata**: the machine that **generated or forwarded the log** (i.e. *which system logged the event*).
+- **`src`** - a **field in the event data**: the **source of the activity**, e.g. the source IP in a firewall/auth log (a CIM field - *who/what initiated the action*).
+- (**`source`** - also metadata: the **file/input** the event came from, e.g. `/var/log/auth.log`. People mix this up with `src` too - it isn't the same.)
+
+*Example:* firewall `fw01` logs a connection from `10.0.0.5` → `8.8.8.8`. Here **`host` = `fw01`** (the box that produced the log) and **`src` = `10.0.0.5`** (the source IP *inside* the log). One says *which system logged it*, the other says *who initiated the action*.
 
 ### What is schema-on-read?
 
