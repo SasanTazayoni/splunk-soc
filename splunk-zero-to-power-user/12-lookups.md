@@ -24,7 +24,7 @@ A **lookup** enriches your events with **extra context** by matching a field aga
 ### Create or Upload
 
 - **Select a file to upload**, or **make one**, to reference.
-- Once it exists, a lookup can be **configured to run automatically** - an *automatic lookup* enriches every matching search without you typing `lookup`.
+- Once it exists, a lookup can be **configured to run automatically** - an _automatic lookup_ enriches every matching search without you typing `lookup`.
 
 ## The workflow
 
@@ -34,7 +34,7 @@ A **lookup** enriches your events with **extra context** by matching a field aga
 
 ## Examples of lookup files
 
-A few common ones (the pattern is always *key → extra detail*):
+A few common ones (the pattern is always _key → extra detail_):
 
 - **IP address → owner / location** (map `src_ip` to the asset or geo).
 - **HTTP status code → description** (`404` → "Not Found").
@@ -102,7 +102,7 @@ The fields:
 
 Click **Save**, and `peopleinfo` is now usable by name in the `lookup` command.
 
-> **Always set permissions on a new knowledge object.** A lookup definition - like the lookup table file, and every KO you create (fields, eventtypes, alerts, extractions…) - defaults to **private to you**. After saving, open its **permissions**, set the **Owner** (e.g. `admin`) and share it to the app or globally, or nobody else's searches can use it. See [knowledge objects](05-knowledge-objects.md#sharing--governance).
+> **Always set permissions on a new knowledge object.** A lookup definition - like the lookup table file, and every KO you create (fields, event types, alerts, extractions…) - defaults to **private to you**. After saving, open its **permissions**, set the **Owner** (e.g. `admin`) and share it to the app or globally, or nobody else's searches can use it. See [knowledge objects](05-knowledge-objects.md#sharing--governance).
 
 ## Building a lookup from a search (export & enrich)
 
@@ -147,6 +147,6 @@ Line by line:
 - `where isnotnull(productId)` - drop rows with no `productId`.
 - `sort - count` - most-purchased first.
 
-**How it gives more value to the search:** without the lookup, `stats count by productId` would give a ranked list of **cryptic IDs** (`WC-SH-G04` → 275) that mean nothing to a human. The lookup **translates each ID into what it actually is** - `WC-SH-G04` → **golf ball**, `SC-MG-G10` → **running shoes** - so the result reads as *"golf balls are the top seller with 275 purchases."* Same search, but now instantly **readable and actionable**. That's the essence of enrichment: joining external context to your events turns opaque keys into meaningful answers.
+**How it gives more value to the search:** without the lookup, `stats count by productId` would give a ranked list of **cryptic IDs** (`WC-SH-G04` → 275) that mean nothing to a human. The lookup **translates each ID into what it actually is** - `WC-SH-G04` → **golf ball**, `SC-MG-G10` → **running shoes** - so the result reads as _"golf balls are the top seller with 275 purchases."_ Same search, but now instantly **readable and actionable**. That's the essence of enrichment: joining external context to your events turns opaque keys into meaningful answers.
 
 Notice it looks **very similar to searching indexed event data** (compare the results table with the data preview back in [setting up](01-setting-up-splunk.md)) - same columns-and-rows layout, the Statistics tab, field values you can click. The only difference is the data is coming **from the lookup file, not an index**. That's the whole idea: a lookup is just another table of data you can search - and, next, **join against your events** to enrich them.

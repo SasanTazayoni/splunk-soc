@@ -1,6 +1,6 @@
 # Knowledge Objects
 
-A **knowledge object (KO)** is the umbrella term for the user-created things that **enrich and interpret** your data in Splunk. The main guide lists the types in the [glossary](../README.md#basic-terms-in-splunk-glossary) (fields, eventtypes, tags, lookups, data models, saved searches/reports, alerts, dashboards…); these are the course's notes on what they're *for*.
+A **knowledge object (KO)** is the umbrella term for the user-created things that **enrich and interpret** your data in Splunk. The main guide lists the types in the [glossary](../README.md#basic-terms-in-splunk-glossary) (fields, event types, tags, lookups, data models, saved searches/reports, alerts, dashboards…); these are the course's notes on what they're _for_.
 
 > Screenshots in this file are from the Udemy course _Splunk: Zero to Power User_.
 
@@ -27,7 +27,7 @@ Knowledge objects are the main way a Splunk deployment gets **smarter over time 
 
 ## Finding knowledge objects in the GUI
 
-In the Splunk web UI, click **Settings** - everything under the **Knowledge** section is a type of knowledge object (fields, eventtypes, tags, lookups, data models, searches/reports/alerts, etc.).
+In the Splunk web UI, click **Settings** - everything under the **Knowledge** section is a type of knowledge object (fields, event types, tags, lookups, data models, searches/reports/alerts, etc.).
 
 ![The Knowledge section of the Settings menu](../images/knowledge-menu.png)
 
@@ -45,14 +45,14 @@ An alert is just a saved search with a trigger, so you create one straight from 
 
    Each filter narrows the events:
 
-   | Filter | Meaning |
-   | --- | --- |
-   | `index=security` | Search the `security` index. |
-   | `action=failure` | Only failed actions. |
-   | `host=web1` | Events from the host `web1`. |
+   | Filter                   | Meaning                                                                         |
+   | ------------------------ | ------------------------------------------------------------------------------- |
+   | `index=security`         | Search the `security` index.                                                    |
+   | `action=failure`         | Only failed actions.                                                            |
+   | `host=web1`              | Events from the host `web1`.                                                    |
    | `eventtype=failed_login` | Events categorised as failed logins (an eventtype - itself a knowledge object). |
-   | `user=admin` | For the `admin` account. |
-   | `src="87.194.216.51"` | From this specific source IP. |
+   | `user=admin`             | For the `admin` account.                                                        |
+   | `src="87.194.216.51"`    | From this specific source IP.                                                   |
 
    Together this finds **failed logins for `admin` on `web1` from one IP** - a classic brute-force / suspicious-login pattern worth alerting on.
 
@@ -62,7 +62,7 @@ An alert is just a saved search with a trigger, so you create one straight from 
 
 ### Trigger actions
 
-**Trigger actions** are what Splunk *does* when the alert fires - added under **When triggered** in the Save As Alert dialog. In this example:
+**Trigger actions** are what Splunk _does_ when the alert fires - added under **When triggered** in the Save As Alert dialog. In this example:
 
 - **Suppress triggering for `60` seconds** - throttle, so the same condition doesn't fire the alert over and over.
 - **Send email** - notify the team.
@@ -92,15 +92,15 @@ Alerts are saved from a search, but **most knowledge objects are created directl
 
    ![The Add new event type form](../images/new-event-type.png)
 
-   | Field | What it does |
-   | --- | --- |
-   | **Destination App** | Which app the object belongs to (e.g. `search`). |
-   | **Name** | The eventtype's name - what you'll reference it by. |
-   | **Search string** | The search that **defines which events match** this eventtype. |
-   | **Tag(s)** | Optional comma-separated tags to attach to matching events. |
-   | **Color** | Optional colour to highlight matching events in results. |
-   | **Priority** | Which eventtype wins when several match - `1` is highest and shows first. |
+   | Field               | What it does                                                              |
+   | ------------------- | ------------------------------------------------------------------------- |
+   | **Destination App** | Which app the object belongs to (e.g. `search`).                          |
+   | **Name**            | The eventtype's name - what you'll reference it by.                       |
+   | **Search string**   | The search that **defines which events match** this eventtype.            |
+   | **Tag(s)**          | Optional comma-separated tags to attach to matching events.               |
+   | **Color**           | Optional colour to highlight matching events in results.                  |
+   | **Priority**        | Which eventtype wins when several match - `1` is highest and shows first. |
 
 3. Click **Save**.
 
-That **Settings → Knowledge → [object type] → New** flow is how you create most knowledge objects, not just eventtypes.
+That **Settings → Knowledge → [object type] → New** flow is how you create most knowledge objects, not just event types.

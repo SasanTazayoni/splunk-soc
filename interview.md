@@ -5,6 +5,7 @@ Interview-ready answers for SOC analyst / Splunk roles. Kept punchy and memorabl
 ## Contents
 
 **Core concepts**
+
 - [What is a SOC?](#what-is-a-soc)
 - [What are the three pillars of a SOC?](#what-are-the-three-pillars-of-a-soc)
 - [What is event data?](#what-is-event-data)
@@ -15,6 +16,7 @@ Interview-ready answers for SOC analyst / Splunk roles. Kept punchy and memorabl
 - [SOC vs NOC?](#soc-vs-noc)
 
 **Security fundamentals**
+
 - [What is the CIA triad?](#what-is-the-cia-triad)
 - [Vulnerability vs threat vs risk?](#vulnerability-vs-threat-vs-risk)
 - [IDS vs IPS?](#ids-vs-ips)
@@ -27,6 +29,7 @@ Interview-ready answers for SOC analyst / Splunk roles. Kept punchy and memorabl
 - [Firewalls and common ports?](#firewalls-and-common-ports)
 
 **SOC operations**
+
 - [What are the SOC tiers / roles?](#what-are-the-soc-tiers--roles)
 - [What is threat hunting?](#what-is-threat-hunting)
 - [What is the incident response lifecycle?](#what-is-the-incident-response-lifecycle)
@@ -35,11 +38,13 @@ Interview-ready answers for SOC analyst / Splunk roles. Kept punchy and memorabl
 - [What is correlation?](#what-is-correlation)
 
 **Frameworks**
+
 - [What is MITRE ATT&CK?](#what-is-mitre-attck)
 - [What is the Cyber Kill Chain?](#what-is-the-cyber-kill-chain)
 - [IOC vs TTP?](#ioc-vs-ttp)
 
 **Splunk**
+
 - [What is Splunk?](#what-is-splunk)
 - [Why use Splunk?](#why-use-splunk)
 - [What is SPL?](#what-is-spl)
@@ -54,6 +59,7 @@ Interview-ready answers for SOC analyst / Splunk roles. Kept punchy and memorabl
 - [What is Splunk Enterprise Security?](#what-is-splunk-enterprise-security)
 
 **Scenario questions**
+
 - [How would you triage a brute-force alert?](#how-would-you-triage-a-brute-force-alert)
 - [A user reports a phishing email - what do you do?](#a-user-reports-a-phishing-email---what-do-you-do)
 - [An EDR/antivirus alert fires on a workstation - how do you handle it?](#an-edrantivirus-alert-fires-on-a-workstation---how-do-you-handle-it)
@@ -61,6 +67,7 @@ Interview-ready answers for SOC analyst / Splunk roles. Kept punchy and memorabl
 - [Walk me through investigating a suspicious login.](#walk-me-through-investigating-a-suspicious-login)
 
 **Behavioural**
+
 - [Why do you want to work in a SOC?](#why-do-you-want-to-work-in-a-soc)
 - [How do you stay up to date with security?](#how-do-you-stay-up-to-date-with-security)
 - [Do you have a home lab or project?](#do-you-have-a-home-lab-or-project)
@@ -102,7 +109,7 @@ A SOC is built on three pillars: **People, Processes, and Technology** (see belo
 
 ### What is event data?
 
-**Event data** is a record of any single occurrence or activity within a system, device, or network - captured with details like *what* happened, *when*, *where*, and *who/what* was involved. Each event is essentially a **timestamped log entry**.
+**Event data** is a record of any single occurrence or activity within a system, device, or network - captured with details like _what_ happened, _when_, _where_, and _who/what_ was involved. Each event is essentially a **timestamped log entry**.
 
 In a SOC, event data is the raw material analysts work with. Sources include:
 
@@ -112,7 +119,7 @@ In a SOC, event data is the raw material analysts work with. Sources include:
 - **Security tools** - antivirus/EDR detections, IDS/IPS alerts
 - **Authentication systems** - successful and failed logins
 
-A typical event contains a **timestamp, source, event type, severity, and description** - e.g. *"User X failed login from IP 10.0.0.5 at 14:32."*
+A typical event contains a **timestamp, source, event type, severity, and description** - e.g. _"User X failed login from IP 10.0.0.5 at 14:32."_
 
 > **Why it matters:** one event is just noise - thousands are generated every second. The value comes from **collecting, correlating, and analysing** event data (usually in a SIEM) to spot patterns. One failed login is nothing; 200 failed logins across 50 accounts in a minute is a likely brute-force attack.
 
@@ -155,8 +162,8 @@ The SIEM is the **brain** that spots the problem; the SOAR is the **hands** that
 
 ### SOC vs NOC?
 
-- A **SOC (Security Operations Centre)** focuses on **security** - detecting and responding to threats. It asks *"is this an attack?"*
-- A **NOC (Network Operations Centre)** focuses on **availability and performance** - keeping systems up, fast, and healthy. It asks *"is this system working?"*
+- A **SOC (Security Operations Centre)** focuses on **security** - detecting and responding to threats. It asks _"is this an attack?"_
+- A **NOC (Network Operations Centre)** focuses on **availability and performance** - keeping systems up, fast, and healthy. It asks _"is this system working?"_
 
 They watch similar telemetry for different goals.
 
@@ -172,7 +179,7 @@ The three core goals of security: **Confidentiality** (only authorised people ca
 
 - **Vulnerability** - a weakness (e.g. an unpatched server).
 - **Threat** - something that could exploit that weakness (a hacker, malware).
-- **Risk** - the likelihood *and* impact of it actually happening.
+- **Risk** - the likelihood _and_ impact of it actually happening.
 
 Simple version: **Risk = Threat × Vulnerability × Impact.** A vulnerability with no threat, or a threat with no vulnerability, is low risk.
 
@@ -187,8 +194,8 @@ Think of it as: **IDS = alarm; IPS = alarm + locked door.**
 
 ### Authentication vs authorisation?
 
-- **Authentication (AuthN)** - proving *who you are* (password, MFA, biometrics).
-- **Authorisation (AuthZ)** - what you're *allowed to do* once you're authenticated (permissions, access level).
+- **Authentication (AuthN)** - proving _who you are_ (password, MFA, biometrics).
+- **Authorisation (AuthZ)** - what you're _allowed to do_ once you're authenticated (permissions, access level).
 
 One-liner: **AuthN = identity; AuthZ = access.**
 
@@ -231,11 +238,11 @@ A **social-engineering attack** that tricks a user into revealing credentials or
 
 A **firewall** controls network traffic against a set of rules, allowing or blocking by IP, port, and protocol. Ports worth memorising:
 
-| Port | Service | | Port | Service |
-| --- | --- | --- | --- | --- |
-| **80** | HTTP | | **53** | DNS |
-| **443** | HTTPS | | **25** | SMTP (email) |
-| **22** | SSH | | **3389** | RDP (remote desktop) |
+| Port    | Service |     | Port     | Service              |
+| ------- | ------- | --- | -------- | -------------------- |
+| **80**  | HTTP    |     | **53**   | DNS                  |
+| **443** | HTTPS   |     | **25**   | SMTP (email)         |
+| **22**  | SSH     |     | **3389** | RDP (remote desktop) |
 
 Also know: **TCP** is reliable and connection-based; **UDP** is faster and connectionless.
 
@@ -277,7 +284,7 @@ Lower is better; driving both down is the SOC's central goal. Related: **dwell t
 ### True positive vs false positive?
 
 - **True positive** - an alert correctly flags a real threat.
-- **False positive** - an alert fires on benign activity that only *looks* suspicious.
+- **False positive** - an alert fires on benign activity that only _looks_ suspicious.
 - **False negative** - a real threat that was **not** caught (the dangerous one).
 
 Most alerts are false positives; continuous **tuning** reduces the noise so real alerts aren't lost (and analysts avoid **alert fatigue**).
@@ -292,16 +299,16 @@ Most alerts are false positives; continuous **tuning** reduces the noise so real
 
 ### What is MITRE ATT&CK?
 
-A **knowledge base of real-world attacker tactics and techniques (TTPs)**. SOCs map their detections and hunts to it, so they can reason about *how* attackers behave and find gaps in their coverage.
+A **knowledge base of real-world attacker tactics and techniques (TTPs)**. SOCs map their detections and hunts to it, so they can reason about _how_ attackers behave and find gaps in their coverage.
 
 ### What is the Cyber Kill Chain?
 
-A **Lockheed Martin model of the stages of an attack**: reconnaissance → weaponise → deliver → exploit → install → command-and-control (C2) → actions on objectives. Useful for thinking about *where* you can break an attack.
+A **Lockheed Martin model of the stages of an attack**: reconnaissance → weaponise → deliver → exploit → install → command-and-control (C2) → actions on objectives. Useful for thinking about _where_ you can break an attack.
 
 ### IOC vs TTP?
 
 - **IOC (Indicator of Compromise)** - a specific artefact signalling a breach (a malicious IP, file hash, or domain). Precise but brittle - attackers change them easily.
-- **TTP (Tactics, Techniques & Procedures)** - *how* an adversary operates. More durable and harder to change, so more valuable for detection.
+- **TTP (Tactics, Techniques & Procedures)** - _how_ an adversary operates. More durable and harder to change, so more valuable for detection.
 
 ---
 
@@ -314,9 +321,10 @@ A **Lockheed Martin model of the stages of an attack**: reconnaissance → weapo
 > **The security-camera analogy.** Imagine a building with hundreds of cameras - one on every door, corridor, and server room. Each camera is a system generating logs (firewalls, servers, endpoints, apps, login systems). Individually each sees only its own patch, and no one could watch hundreds of screens at once.
 >
 > **Splunk is the control room** that wires every camera into one wall of monitors watched from a single desk. Now one analyst can:
+>
 > - **See everything in one place** - no running between rooms (Splunk **aggregates** all the logs centrally).
-> - **Search instantly** - *"show me everyone who entered the server room after 2am"* instead of scrubbing hours of footage (**SPL**, Splunk's search language).
-> - **Get automatic alerts** - the system flags *"someone's rattled the back door 200 times"* so the analyst doesn't have to stare and hope (**correlation and alerting**).
+> - **Search instantly** - _"show me everyone who entered the server room after 2am"_ instead of scrubbing hours of footage (**SPL**, Splunk's search language).
+> - **Get automatic alerts** - the system flags _"someone's rattled the back door 200 times"_ so the analyst doesn't have to stare and hope (**correlation and alerting**).
 > - **Spot patterns across cameras** - the same suspicious person at the front door, then the stairwell, then the vault; no single camera tells that story, but the control room connects them (**correlation**).
 >
 > Without the control room you'd need hundreds of people each watching one screen - impossible. Splunk lets one analyst effectively monitor the whole building by centralising every feed and doing the heavy watching for them.
@@ -340,6 +348,7 @@ index=web status=404
 | stats count by clientip
 | sort -count
 ```
+
 > Retrieve all 404 events, count them per client IP, and rank most-frequent first - a simple noisy-client detector.
 
 ### What are the components of Splunk architecture?
@@ -387,15 +396,15 @@ In short: sourcetype is the key that maps raw data to the correct parsing and fi
 
 Easy to confuse, but they sit at different levels:
 
-- **`host`** - Splunk **metadata**: the machine that **generated or forwarded the log** (i.e. *which system logged the event*).
-- **`src`** - a **field in the event data**: the **source of the activity**, e.g. the source IP in a firewall/auth log (a CIM field - *who/what initiated the action*).
+- **`host`** - Splunk **metadata**: the machine that **generated or forwarded the log** (i.e. _which system logged the event_).
+- **`src`** - a **field in the event data**: the **source of the activity**, e.g. the source IP in a firewall/auth log (a CIM field - _who/what initiated the action_).
 - (**`source`** - also metadata: the **file/input** the event came from, e.g. `/var/log/auth.log`. People mix this up with `src` too - it isn't the same.)
 
-*Example:* firewall `fw01` logs a connection from `10.0.0.5` → `8.8.8.8`. Here **`host` = `fw01`** (the box that produced the log) and **`src` = `10.0.0.5`** (the source IP *inside* the log). One says *which system logged it*, the other says *who initiated the action*.
+_Example:_ firewall `fw01` logs a connection from `10.0.0.5` → `8.8.8.8`. Here **`host` = `fw01`** (the box that produced the log) and **`src` = `10.0.0.5`** (the source IP _inside_ the log). One says _which system logged it_, the other says _who initiated the action_.
 
 ### What is schema-on-read?
 
-Splunk **stores raw data as-is and extracts fields at search time**, not at ingest. Contrast **schema-on-write** (traditional databases), which forces you to define the structure *before* loading data. Schema-on-read is why you can onboard unfamiliar or changing log formats instantly, without redesigning anything.
+Splunk **stores raw data as-is and extracts fields at search time**, not at ingest. Contrast **schema-on-write** (traditional databases), which forces you to define the structure _before_ loading data. Schema-on-read is why you can onboard unfamiliar or changing log formats instantly, without redesigning anything.
 
 ### Splunk apps vs add-ons?
 
@@ -410,7 +419,7 @@ Apps often **depend on** add-ons - the add-on normalises the data, the app analy
 - **Reports** - saved/scheduled searches (e.g. a daily failed-login summary).
 - **Alerts** - a saved search that fires an **action** (notify, ticket, SOAR playbook) when a condition is met - the core of automated detection.
 - **Dashboards** - panels of visualisations giving a live view.
-- **Knowledge objects** - reusable eventtypes, tags, lookups, and data models.
+- **Knowledge objects** - reusable event types, tags, lookups, and data models.
 
 ### What is Splunk Enterprise Security?
 
@@ -466,4 +475,4 @@ Name concrete sources: security news (**The Hacker News, BleepingComputer, r/net
 
 ---
 
-*A study companion to [README.md](README.md) (full detail) and [docker.md](docker.md) (the hands-on Splunk lab).*
+_A study companion to [README.md](README.md) (full detail) and [docker.md](docker.md) (the hands-on Splunk lab)._

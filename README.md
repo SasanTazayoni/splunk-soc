@@ -341,7 +341,7 @@ The recurring signals a SOC watches for, gathered into one detection checklist (
 - **Configuration & integrity changes** - security settings altered, logging/AV disabled, new firewall rules, unexpected system/file changes.
 - **Resource anomalies** - CPU/memory spikes (e.g. **cryptojacking** - see the EC2 example), unexpected new services.
 
-In Splunk terms, these map to **saved/correlation searches**, and related events can be grouped with **eventtypes** (Splunk's feature for tagging categories of events) to make them easier to search and alert on.
+In Splunk terms, these map to **saved/correlation searches**, and related events can be grouped with **event types** (Splunk's feature for tagging categories of events) to make them easier to search and alert on.
 
 ---
 
@@ -739,26 +739,26 @@ flowchart LR
 
 The vocabulary you'll meet constantly - consolidated in one place:
 
-| Term                       | What it means                                                                                                                                         |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Event**                  | A single record of something that happened - one log entry (see [What are events?](#what-are-events-in-splunk)).                                      |
-| **Index**                  | The repository where Splunk stores ingested, processed data (think "database"). The default is `main`; security data often goes in dedicated indexes. |
-| **Source**                 | The file, stream, or input an event came from (e.g. `/var/log/auth.log`).                                                                             |
-| **Sourcetype**             | The **format/type** of the data (e.g. `access_combined`, `linux_secure`) - tells Splunk how to parse it.                                              |
-| **Host**                   | The device/machine the event originated from.                                                                                                         |
-| **Field**                  | A name-value pair extracted from an event (e.g. `status=404`, `user=alice`), searchable by name. Splunk auto-extracts many; **add-ons supply more** for their data formats; and you can define your own.                          |
-| **Fields `_time`, `_raw`** | `_time` is the event's timestamp (the backbone of everything); `_raw` is the original unparsed text.                                                  |
-| **SPL**                    | Search Processing Language - the query language (see [What is SPL?](#what-is-spl)).                                                                   |
-| **Search**                 | An SPL query run over indexed data.                                                                                                                   |
-| **Saved search / Report**  | A search stored to re-run or schedule.                                                                                                                |
-| **Alert**                  | A saved search that runs on a schedule/real-time and triggers an action when its condition is met.                                                    |
-| **Dashboard**              | A collection of visualisations (panels) built from searches.                                                                                          |
-| **Eventtype**              | A saved category that tags events matching a given search, so related events are easy to group and reuse.                                             |
-| **Data model**             | A structured, hierarchical mapping of data that powers **pivots** and accelerates searches (e.g. the CIM).                                            |
-| **CIM**                    | Common Information Model - a standard field-naming schema so data from different sources lines up (crucial for Enterprise Security).                  |
-| **Knowledge object**       | The umbrella term for user-created things that enrich data: fields, eventtypes, tags, lookups, data models, etc.                                      |
-| **Lookup**                 | An external table (e.g. CSV) used to enrich events (map an IP → asset owner).                                                                         |
-| **App / Add-on**           | Packaged bundles of content/config that extend Splunk (see [Apps vs add-ons](#apps-vs-add-ons) below).                                                |
+| Term                       | What it means                                                                                                                                                                                            |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Event**                  | A single record of something that happened - one log entry (see [What are events?](#what-are-events-in-splunk)).                                                                                         |
+| **Index**                  | The repository where Splunk stores ingested, processed data (think "database"). The default is `main`; security data often goes in dedicated indexes.                                                    |
+| **Source**                 | The file, stream, or input an event came from (e.g. `/var/log/auth.log`).                                                                                                                                |
+| **Sourcetype**             | The **format/type** of the data (e.g. `access_combined`, `linux_secure`) - tells Splunk how to parse it.                                                                                                 |
+| **Host**                   | The device/machine the event originated from.                                                                                                                                                            |
+| **Field**                  | A name-value pair extracted from an event (e.g. `status=404`, `user=alice`), searchable by name. Splunk auto-extracts many; **add-ons supply more** for their data formats; and you can define your own. |
+| **Fields `_time`, `_raw`** | `_time` is the event's timestamp (the backbone of everything); `_raw` is the original unparsed text.                                                                                                     |
+| **SPL**                    | Search Processing Language - the query language (see [What is SPL?](#what-is-spl)).                                                                                                                      |
+| **Search**                 | An SPL query run over indexed data.                                                                                                                                                                      |
+| **Saved search / Report**  | A search stored to re-run or schedule.                                                                                                                                                                   |
+| **Alert**                  | A saved search that runs on a schedule/real-time and triggers an action when its condition is met.                                                                                                       |
+| **Dashboard**              | A collection of visualisations (panels) built from searches.                                                                                                                                             |
+| **Eventtype**              | A saved category that tags events matching a given search, so related events are easy to group and reuse.                                                                                                |
+| **Data model**             | A structured, hierarchical mapping of data that powers **pivots** and accelerates searches (e.g. the CIM).                                                                                               |
+| **CIM**                    | Common Information Model - a standard field-naming schema so data from different sources lines up (crucial for Enterprise Security).                                                                     |
+| **Knowledge object**       | The umbrella term for user-created things that enrich data: fields, event types, tags, lookups, data models, etc.                                                                                        |
+| **Lookup**                 | An external table (e.g. CSV) used to enrich events (map an IP → asset owner).                                                                                                                            |
+| **App / Add-on**           | Packaged bundles of content/config that extend Splunk (see [Apps vs add-ons](#apps-vs-add-ons) below).                                                                                                   |
 
 ---
 
@@ -854,16 +854,16 @@ The three broad kinds of SPL commands:
 
 Within the search/filter part you combine terms with **standard operators**:
 
-| Operator | Meaning | Example |
-| --- | --- | --- |
-| `AND` | Both must match (this is the **default** between terms, so it's often omitted). | `status=404 AND method=GET` |
-| `OR` | Either may match. | `status=404 OR status=500` |
-| `NOT` | Exclude matches. | `status=404 NOT clientip=10.0.0.5` |
-| `=` / `!=` | Field equals / does not equal a value. | `user!=admin` |
-| `<` `>` `<=` `>=` | Numeric/lexical comparison. | `bytes>1000` |
-| `*` | **Wildcard** - matches any number of characters. | `uri_path=/admin*` |
-| `( )` | **Group** terms to control precedence. | `(status=404 OR status=500) AND method=GET` |
-| `"..."` | Match an **exact phrase** (spaces/punctuation included). | `"GET /login"` |
+| Operator          | Meaning                                                                         | Example                                     |
+| ----------------- | ------------------------------------------------------------------------------- | ------------------------------------------- |
+| `AND`             | Both must match (this is the **default** between terms, so it's often omitted). | `status=404 AND method=GET`                 |
+| `OR`              | Either may match.                                                               | `status=404 OR status=500`                  |
+| `NOT`             | Exclude matches.                                                                | `status=404 NOT clientip=10.0.0.5`          |
+| `=` / `!=`        | Field equals / does not equal a value.                                          | `user!=admin`                               |
+| `<` `>` `<=` `>=` | Numeric/lexical comparison.                                                     | `bytes>1000`                                |
+| `*`               | **Wildcard** - matches any number of characters.                                | `uri_path=/admin*`                          |
+| `( )`             | **Group** terms to control precedence.                                          | `(status=404 OR status=500) AND method=GET` |
+| `"..."`           | Match an **exact phrase** (spaces/punctuation included).                        | `"GET /login"`                              |
 
 > **Boolean keywords must be UPPERCASE** (`AND`/`OR`/`NOT`) - lowercase `and` is treated as a search term, not an operator.
 >
@@ -1000,7 +1000,7 @@ Both limit which fields you see, but they do different jobs:
 - **`table`** is a **formatting/display** command - it renders the results as a **table** with the columns you name, **in that order**. It's typically the last command, and it doesn't feed fields onward the way `fields` does.
   - `... | table _time, clientip, status` - show these as ordered table columns.
 
-Rule of thumb: use **`fields`** to shape *what data flows through* the search (and for performance); use **`table`** to *present* the final output as tidy columns. (Worked before/after examples with screenshots are in the [course notes](splunk-zero-to-power-user/07-spl-syntax-colours.md).)
+Rule of thumb: use **`fields`** to shape _what data flows through_ the search (and for performance); use **`table`** to _present_ the final output as tidy columns. (Worked before/after examples with screenshots are in the [course notes](splunk-zero-to-power-user/07-spl-syntax-colours.md).)
 
 ### `dedup`
 
@@ -1029,7 +1029,7 @@ These are the building blocks a SOC produces in Splunk, from simplest to richest
 - **Dashboards** - panels of visualisations giving a **live operational view**; built from **Simple XML** or the newer **Dashboard Studio**.
 - **Visualisations** - tables, timecharts, single-value KPIs, bar/pie charts, maps, etc.
 - **Data models & pivots** - a structured layer over your data so non-SPL users can build reports via a point-and-click **Pivot** interface.
-- **Knowledge objects** - reusable eventtypes, tags, lookups, and field extractions that enrich data for everyone.
+- **Knowledge objects** - reusable event types, tags, lookups, and field extractions that enrich data for everyone.
 
 For a SOC specifically, the high-value outputs are **correlation-search-driven alerts** (detections) and **monitoring dashboards** - exactly the Tier 1 working surface described in [Dashboards](#dashboards) above.
 
