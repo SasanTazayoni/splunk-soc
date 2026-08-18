@@ -305,6 +305,10 @@ Beyond the tier ladder, a mature SOC contains (or works closely with) these spec
 - **Red team = offence.** Ethical hackers who simulate real adversaries to find gaps before real attackers do.
 - **Purple team = collaboration**, not a permanent team so much as a _way of working_: red shares its attack techniques with blue, blue builds detections for them, and they verify together. "Purple" = the loop that makes both sides better.
 
+![Red, blue and purple team responsibilities - red is offence, blue is defence, purple is the overlap where they collaborate](images/red-blue-purple.png)
+
+_Red / blue / purple team responsibilities. Image source: [SQA Consulting](https://sqa-consulting.com/infosec-colour-team-structure-the-purple-team/)._
+
 ---
 
 ## The incident response lifecycle
@@ -354,6 +358,10 @@ The SOC's work runs on a stack of tooling - worth knowing the categories:
 | **IDS / IPS** (Intrusion Detection / Prevention System)  | Detect (IDS) or block (IPS) malicious network traffic                                       | Snort, Suricata                                                  |
 | **Threat Intelligence Platform (TIP)**                   | Aggregate and operationalise threat intel / IOCs                                            | MISP, Recorded Future                                            |
 | **Ticketing / Case management**                          | Track incidents through their lifecycle                                                     | ServiceNow, Jira                                                 |
+
+![The core SOC tool stack - SIEM, EDR, NDR, TIP and SOAR, and what each does](images/SOC-tech-stack.webp)
+
+_The core SOC tool stack (SIEM / EDR / NDR / TIP / SOAR). Image source: [Manohar, Medium](https://medium.com/@manohar017manu/soc-tools-explained-for-beginners-siem-edr-ndr-soar-a-simple-guide-2e442252beef)._
 
 ---
 
@@ -1200,9 +1208,17 @@ Where to learn hands-on:
 - **Runbook / Playbook** - step-by-step procedures for handling a given alert type consistently.
 - **Escalation** - passing an incident up a tier when it exceeds the current level's scope.
 
+![MITRE ATT&CK Enterprise tactics - the 14 tactics from Reconnaissance to Impact](images/mitre-attck-framework.webp)
+
+_The 14 MITRE ATT&CK Enterprise tactics (Reconnaissance → Impact) - the stages an attacker moves through. Image source: [Cyberbit](https://www.cyberbit.com/cybersecurity-training/mitre-attck-framework-enterprise-matrix/)._
+
 ![Cyber Kill Chain - the seven attack stages: reconnaissance, weaponization, delivery, exploitation, installation, command and control, actions on objectives](images/cyber-kill-chain.png)
 
 _The seven stages of the Cyber Kill Chain - breaking any link disrupts the attack. Image source: [Cymulate](https://cymulate.com/cybersecurity-glossary/cyber-kill-chain/)._
+
+![The Pyramid of Pain - indicators ranked by how hard they are for an attacker to change, from Hash Values (trivial) at the bottom up to TTPs (tough) at the top](images/pyramid-of-pain.png)
+
+_The **Pyramid of Pain**: the higher up you can detect an adversary, the more painful it is for them to adapt - so **TTPs** (top, where MITRE ATT&CK operates) are far more durable to defend on than **IOCs** like hashes/IPs (bottom). Image source: [David Bianco](https://detect-respond.blogspot.com/2013/03/the-pyramid-of-pain.html)._
 
 ---
 
