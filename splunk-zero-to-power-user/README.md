@@ -31,6 +31,7 @@ Screenshots throughout this folder are from the course unless noted otherwise.
 | 17  | Macros                        | [17-macros.md](17-macros.md)                                         |
 | 18  | Workflow actions              | [18-workflow-actions.md](18-workflow-actions.md)                     |
 | 19  | Normalisation & troubleshooting | [19-normalisation-and-troubleshooting.md](19-normalisation-and-troubleshooting.md) |
+| 20  | Data models                   | [20-data-models.md](20-data-models.md)                               |
 
 ## Conventions
 
