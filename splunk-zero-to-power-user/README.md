@@ -29,6 +29,7 @@ Screenshots throughout this folder are from the course unless noted otherwise.
 | 15  | Alerts                        | [15-alerts.md](15-alerts.md)                                         |
 | 16  | Tags & event types            | [16-tags-and-event-types.md](16-tags-and-event-types.md)             |
 | 17  | Macros                        | [17-macros.md](17-macros.md)                                         |
+| 18  | Workflow actions              | [18-workflow-actions.md](18-workflow-actions.md)                     |
 
 ## Conventions
 
